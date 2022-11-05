@@ -25,11 +25,11 @@ export class gnosis {
 		throw new Error('Method not implemented.')
 	}
 
-	proposeTransactions(grantName: string, transactions, wallet: any): Promise<string> {
+	proposeTransactions(grantName: string, transactions: any, wallet: any): Promise<string> {
 		throw new Error('Method not implemented.')
 	}
 
-    async createMultiTransaction(transactions, safeAddress: string) {
+    async createMultiTransaction(transactions: any, safeAddress: string) {
 
 		console.log('creating gnosis transaction for', transactions)
 		//@ts-ignore

@@ -16,7 +16,8 @@ import {
 	withSignOffProposal,
 } from '@solana/spl-governance';
 import { Connection, GetProgramAccountsConfig, GetProgramAccountsFilter, PublicKey, SystemProgram, Transaction, TransactionInstruction } from '@solana/web3.js';
-import { ASSOCIATED_TOKEN_PROGRAM_ID, Token, TOKEN_PROGRAM_ID } from "@solana/spl-token"
+// import {Token} from '@solana/spl-token';
+import { ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_PROGRAM_ID } from "@solana/spl-token"
 import { TokenListProvider } from '@solana/spl-token-registry'
 import assert from 'assert';
 import axios from 'axios';
@@ -141,12 +142,12 @@ export class realms{
 
 			for(let i = 0; i < transactions.length; i++) {
 				const mintPublicKey = new PublicKey(transactions[i]?.selectedToken.info.mint);  
-				const mintToken = new Token(
-					this.connection,
-					mintPublicKey,
-					TOKEN_PROGRAM_ID,
-					wallet// the wallet owner will pay to transfer and to create recipients associated token account if it does not yet exist.
-				);
+				// const mintToken = new Token(
+				// 	this.connection,
+				// 	mintPublicKey,
+				// 	TOKEN_PROGRAM_ID,
+				// 	wallet// the wallet owner will pay to transfer and to create recipients associated token account if it does not yet exist.
+				// );
 
 				const [fromAddress] = await PublicKey.findProgramAddress(
 					[nativeTreasury.toBuffer(), TOKEN_PROGRAM_ID.toBuffer(), mintPublicKey.toBuffer()],
@@ -160,33 +161,33 @@ export class realms{
 
 				const receiverAccount = await this.connection.getAccountInfo(toAddress);
 
-				if (receiverAccount === null) {
-					accountCreationInstruction.push(
-							Token.createAssociatedTokenAccountInstruction(
-								mintToken.associatedProgramId,
-								mintToken.programId,
-								mintPublicKey,
-								toAddress,
-								new PublicKey(transactions[i].to),
-								wallet.publicKey
-							)
-					)
-				}
+				// if (receiverAccount === null) {
+				// 	accountCreationInstruction.push(
+				// 			Token.createAssociatedTokenAccountInstruction(
+				// 				mintToken.associatedProgramId,
+				// 				mintToken.programId,
+				// 				mintPublicKey,
+				// 				toAddress,
+				// 				new PublicKey(transactions[i].to),
+				// 				wallet.publicKey
+				// 			)
+				// 	)
+				// }
 
 				const instructions: InstructionData[] = []; 
 
-				instructions.push(
-					createInstructionData(
-						Token.createTransferInstruction(
-							TOKEN_PROGRAM_ID,
-							fromAddress,
-							toAddress,
-							nativeTreasury,
-							[],
-							transactions[i].amount*10**transactions[0]?.selectedToken.info.tokenAmount.decimals
-						)
-					)
-				);
+				// instructions.push(
+				// 	createInstructionData(
+				// 		Token.createTransferInstruction(
+				// 			TOKEN_PROGRAM_ID,
+				// 			fromAddress,
+				// 			toAddress,
+				// 			nativeTreasury,
+				// 			[],
+				// 			transactions[i].amount*10**transactions[0]?.selectedToken.info.tokenAmount.decimals
+				// 		)
+				// 	)
+				// );
 	
 				await withInsertTransaction(
 					proposalInstructions,
