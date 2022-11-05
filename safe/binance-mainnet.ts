@@ -1,19 +1,20 @@
 import { gnosis } from "../utils/gnosis";
 
 export class BinanceMainnet extends gnosis {
-    safeAddress : string;
-    chainId: number;
-    txnServiceURL: string;
     chainName: string;
-    rpcURL: string;
     chainLogo: string;
 
-    constructor() {
-        super()
-        this.chainId = 56
-        this.txnServiceURL = 'https://safe-transaction.bsc.gnosis.io/api/v1'
+    constructor(safeAddress: string) {
+        super(56, 'https://safe-transaction.bsc.gnosis.io/api/v1', safeAddress);
         this.chainName = 'Binance Smart Chain'
-        this.rpcURL = 'https://bsc-dataseed.binance.org/'
         this.chainLogo = 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/info/logo.png'
+    }
+
+    getChainId(){
+        return this.chainId
+    }
+
+    getChainName(){
+        return this.chainName
     }
 }

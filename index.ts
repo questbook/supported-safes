@@ -16,47 +16,40 @@ import { SolanaMainnet } from "./safe/solana-mainnet";
 import { TelosMainnet } from "./safe/telos-mainnet";
 
 export class SupportedSafes {
-    safes: any[];
-
-    constructor () {
-        // this.safes = [];
-        // this.safes.push(new ArbitrumMainnet());
-        // this.safes.push(new AuroraMainnet());
-        // this.safes.push(new AvalancheMainnet());
-        // this.safes.push(new BinanceMainnet());
-        // this.safes.push(new CeloMainnet());
-        // this.safes.push(new EnergyWebChain());
-        // this.safes.push(new EnergyWebVolta());
-        // this.safes.push(new EthereumMainnet());
-        // this.safes.push(new GnosisMainnet());
-        // this.safes.push(new GoerliTestnet());
-        // this.safes.push(new OptimismMainnet());
-        // this.safes.push(new PolygonMainnet());
-        // this.safes.push(new RinkebyTestnet());
-        // this.safes.push(new SolanaDevnet());
-        // this.safes.push(new SolanaMainnet());
-        // this.safes.push(new TelosMainnet());
-    }
-
     getSafe(chainId: number, safeAddress: string) {
-
         switch (chainId) {
+            case 42161:
+                return new ArbitrumMainnet(safeAddress);
+            case 1313161554:
+                return new AuroraMainnet(safeAddress);
+            case 43114:
+                return new AvalancheMainnet(safeAddress);
+            case 56:
+                return new BinanceMainnet(safeAddress);
+            case 42220:
+                return new CeloMainnet(safeAddress);
+            case 246:
+                return new EnergyWebChain(safeAddress);
+            case 73799:
+                return new EnergyWebVolta(safeAddress);
             case 1:
                 return new EthereumMainnet(safeAddress);
-            case 3:
+            case 137:
+                return new GnosisMainnet(safeAddress);
+            case 5:
                 return new GoerliTestnet(safeAddress);
+            case 10:
+                return new OptimismMainnet(safeAddress);
+            case 137:
+                return new PolygonMainnet(safeAddress);
             case 4:
                 return new RinkebyTestnet(safeAddress);
-            case 5:
-                return new GnosisMainnet(safeAddress);
+            case 900002:
+                return new SolanaDevnet(safeAddress);
+            case 900001:
+                return new SolanaMainnet(safeAddress);
+            case 40:
+                return new TelosMainnet(safeAddress);
         }
-
-        // return this.safes.find(safe => safe.chainId === chainId);
-    }
-
-    getSafes() {
-        return this.safes;
-    }
+    }    
 }
-
-//switch case on the chainId to create the safe object and return
