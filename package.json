@@ -2,11 +2,15 @@
   "name": "@questbook/supported-safes",
   "version": "0.0.1",
   "description": "Questbook supported safes",
-  "main": "index.ts",
+  "main": "lib/index",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc"
+    "build": "tsc",
+    "prepare": "tsc"
   },
+  "files": [
+    "lib/*"
+  ],
   "keywords": [],
   "author": "",
   "license": "ISC",
