@@ -5,7 +5,7 @@ export class GoerliTestnet extends gnosis {
     chainLogo: string;
 
     constructor(safeAddress: string) {
-        super(5, 'https://safe-transaction.goerli.gnosis.io/api/v1', safeAddress);
+        super(5, 'https://safe-transaction.goerli.gnosis.io/api/', safeAddress);
         this.chainName = 'Goerli Testnet'
         this.chainLogo = 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png'
     }

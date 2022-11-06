@@ -5,7 +5,7 @@ export class SolanaDevnet extends realms {
     chainLogo: string;
 
     constructor(safeAddress: string) {
-        super(900002, 'https://safe-transaction.devnet.solana.com/api/v1', safeAddress)
+        super(900002, 'https://mango.devnet.rpcpool.com', safeAddress)
         this.chainName = 'Solana Devnet'
         this.chainLogo = 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png'
     }

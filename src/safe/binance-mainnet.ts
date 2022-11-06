@@ -5,7 +5,7 @@ export class BinanceMainnet extends gnosis {
     chainLogo: string;
 
     constructor(safeAddress: string) {
-        super(56, 'https://safe-transaction.bsc.gnosis.io/api/v1', safeAddress);
+        super(56, 'https://safe-transaction.bsc.gnosis.io/api/', safeAddress);
         this.chainName = 'Binance Smart Chain'
         this.chainLogo = 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/info/logo.png'
     }
