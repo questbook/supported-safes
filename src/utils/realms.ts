@@ -27,7 +27,7 @@ export class realms{
 
 	chainId: number;
 	rpcURL: string;
-	safeAddress: PublicKey | string | undefined;
+	safeAddress: PublicKey | undefined;
 	connection: Connection;
 	programId: PublicKey;
 	allProposals: ProgramAccount<Proposal>[];
@@ -35,7 +35,7 @@ export class realms{
 	constructor(chainId: number, rpcURL: string, safeAddress: string) {
 		this.chainId = chainId;
 		this.rpcURL = rpcURL;
-		this.safeAddress = safeAddress? new PublicKey(safeAddress): safeAddress;
+		this.safeAddress = safeAddress? new PublicKey(safeAddress): undefined;
 		this.connection = new Connection(rpcURL);
 		this.programId = new PublicKey('GovER5Lthms3bLBqWub97yVrMmEogzX7xNjdXpPPCVZw');
 		this.allProposals = [];

@@ -159,7 +159,7 @@ export class gnosis {
 			signer,
 		})
 		const safeService = new SafeServiceClient({ txServiceUrl: this.rpcURL, ethAdapter })
-		const balanceInUsd = await safeService.getUsdBalances(this.safeAddress)
+		const balanceInUsd = await safeService.getUsdBalances(this.safeAddress!)
 		return balanceInUsd
 	}
 }
