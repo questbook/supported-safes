@@ -7,7 +7,7 @@ export class gnosis {
 
 	chainId: number;
 	rpcURL: string;
-	safeAddress: string;
+	safeAddress: string | undefined;
 
 	constructor(chainId: number, rpcURL: string, safeAddress: string) {
 		this.chainId = chainId
