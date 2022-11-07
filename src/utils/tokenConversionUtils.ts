@@ -36,4 +36,4 @@ const getCeloTokenUSDRate = async () => {
 	return response;
 }
 
-export {solanaToUsd, solanaToUsdOnDate, usdToSolana, getCeloTokenUSDRate}
+export {solanaToUsd, solanaToUsdOnDate, usdToSolana, getCeloTokenUSDRate, getDateInDDMMYYYY}
