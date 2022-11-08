@@ -27,9 +27,9 @@ export class gnosis {
 		throw new Error('Method not implemented.')
 	}
 
-	proposeTransactions(grantName: string, transactions: any, wallet: any): Promise<string> {
-		throw new Error('Method not implemented.')
-	}
+	// proposeTransactions(grantName: string, transactions: any, wallet: any): Promise<string> {
+	// 	throw new Error('Method not implemented.')
+	// }
 
 	encodeTransactionData(recipientAddress: string, fundAmount: string, rewardAssetDecimals: number) {
 		const ERC20Interface = new ethers.utils.Interface(erc20ABI)
@@ -81,9 +81,9 @@ export class gnosis {
 		return readyTxs
 	}
 
-	async createMultiTransaction(workspaceSafeChainId: any, initiateTransactionData: any, safeAddress: string) {
+	async proposeTransactions(grantName: string, initiateTransactionData: any, wallet: any) {
 
-		const readyToExecuteTxs = await this.createEVMMetaTransactions(workspaceSafeChainId, initiateTransactionData)
+		const readyToExecuteTxs = await this.createEVMMetaTransactions(this.chainId.toString(), initiateTransactionData)
 		console.log('creating gnosis transaction for', readyToExecuteTxs)
 		//@ts-ignore
 		const provider = new ethers.providers.Web3Provider(window.ethereum)
@@ -109,10 +109,10 @@ export class gnosis {
 				}
 			}
 
-			safeSdk = await Safe.create({ ethAdapter, safeAddress, contractNetworks })
+			safeSdk = await Safe.create({ ethAdapter, safeAddress: this.safeAddress!, contractNetworks })
 
 		} else {
-			safeSdk = await Safe.create({ ethAdapter, safeAddress })
+			safeSdk = await Safe.create({ ethAdapter, safeAddress: this.safeAddress! })
 
 		}
 
@@ -126,7 +126,7 @@ export class gnosis {
 			// console.log('safe address', safeAddress, safeTransaction.data, safeTxHash, senderSignature.data)
 
 			await safeService.proposeTransaction({
-				safeAddress,
+				safeAddress: this.safeAddress!,
 				safeTransactionData: safeTransaction.data,
 				safeTxHash,
 				senderAddress: senderSignature.signer,
