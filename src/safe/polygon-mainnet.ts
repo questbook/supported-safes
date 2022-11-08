@@ -17,4 +17,8 @@ export class PolygonMainnet extends gnosis {
     getChainName(){
         return this.chainName
     }
+
+    getIsEvm(){
+        return true;
+    }
 }

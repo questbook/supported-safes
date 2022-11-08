@@ -17,4 +17,8 @@ export class SolanaMainnet extends realms {
     getChainName(){
         return this.chainName
     }
+
+    getIsEvm(){
+        return false;
+    }
 }
