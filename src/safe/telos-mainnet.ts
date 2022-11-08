@@ -5,7 +5,7 @@ export class TelosMainnet extends gnosis {
     chainLogo: string;
 
     constructor(safeAddress: string) {
-        super(40, 'https://transaction.safe.telos.net/api/', safeAddress)
+        super(40, 'https://transaction.safe.telos.net', safeAddress)
         this.chainName = 'Telos Mainnet'
         this.chainLogo = 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/telos/info/logo.png'
     }
