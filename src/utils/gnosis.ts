@@ -219,7 +219,7 @@ export class gnosis {
 
 	async getTokenAndbalance(): Promise<any> {
 		const tokenList: any[] = []
-		const gnosisUrl = `${this.rpcURL}v1/safes/${this.safeAddress}/balances/usd`
+		const gnosisUrl = `${this.rpcURL}/api/v1/safes/${this.safeAddress}/balances/usd`
 		console.log('fetching tokens from ', gnosisUrl)
 		const response = await axios.get(gnosisUrl)
 		const tokensFetched = response.data
