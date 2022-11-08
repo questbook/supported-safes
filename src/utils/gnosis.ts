@@ -4,6 +4,7 @@ import EthersAdapter from '@gnosis.pm/safe-ethers-lib'
 import SafeServiceClient from '@gnosis.pm/safe-service-client'
 import { getCeloTokenUSDRate } from './tokenConversionUtils';
 import { erc20ABI } from 'wagmi'
+import axios from 'axios';
 
 export class gnosis {
 
@@ -214,5 +215,29 @@ export class gnosis {
 		const safeService = new SafeServiceClient({ txServiceUrl: this.rpcURL, ethAdapter })
 		const balanceInUsd = await safeService.getUsdBalances(this.safeAddress!)
 		return balanceInUsd
+	}
+
+	async getTokenAndbalance(): Promise<any> {
+		const tokenList: any[] = []
+		const gnosisUrl = `${this.rpcURL}v1/safes/${this.safeAddress}/balances/usd`
+		console.log('fetching tokens from ', gnosisUrl)
+		const response = await axios.get(gnosisUrl)
+		const tokensFetched = response.data
+		tokensFetched.filter((token: any) => token.token).map((token: any) => {
+			const tokenBalance = (ethers.utils.formatUnits(token.balance, token.token.decimals)).toString()
+			tokenList.push({
+				tokenIcon: token.token.logoUri,
+				tokenName: token.token.symbol,
+				tokenValueAmount: `${token.fiatBalance == '0.0' ? tokenBalance : `${token.fiatBalance} usd`}`,
+				usdValueAmount: token.fiatBalance,
+				mintAddress: '',
+				info: {
+					decimals: token.token.decimals,
+					tokenAddress: token.tokenAddress,
+					fiatConversion: token.fiatConversion
+				},
+			})
+		})
+		return tokenList;
 	}
 }
