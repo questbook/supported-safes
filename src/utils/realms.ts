@@ -387,12 +387,12 @@ export class realms{
 	// 	}
 	// }
 
-	getOwners = async(safeAddress: string): Promise<string[]> => {
+	async getOwners (): Promise<string[]> {
 		const connection = new Connection(process.env.SOLANA_RPC!, 'recent')
 		const programId = new PublicKey('GovER5Lthms3bLBqWub97yVrMmEogzX7xNjdXpPPCVZw')
 
 		try {
-			const safeAddressPublicKey = new PublicKey(safeAddress)
+			const safeAddressPublicKey = new PublicKey(this.safeAddress!)
 			const tokenownerrecord = await getAllTokenOwnerRecords(connection, programId, safeAddressPublicKey)
 			return tokenownerrecord.map(record => record.account.governingTokenOwner.toString())
 		} catch(e: any) {
@@ -400,16 +400,16 @@ export class realms{
 		}
 	}
 
-	getTokenAndbalance = async(realmAddress: string): Promise<any> =>{
+	async getTokenAndbalance (): Promise<any>{
 
 		let tokenList:any[] = [];
 
 		const connection = new Connection(process.env.SOLANA_RPC!, 'recent')
 		const programId = new PublicKey('GovER5Lthms3bLBqWub97yVrMmEogzX7xNjdXpPPCVZw')
-		const realmsPublicKey = new PublicKey(realmAddress)
+		const realmsPublicKey = new PublicKey(this.safeAddress!)
 		const realmData = await getRealm(connection, realmsPublicKey)
 		const governances = await getGovernanceAccounts(connection, programId, Governance, [
-			pubkeyFilter(1, new PublicKey(realmAddress))!,
+			pubkeyFilter(1, new PublicKey(this.safeAddress!))!,
 		])
 		const governance = governances.filter((gov)=>gov.pubkey.toString()===realmData.account.authority?.toString())[0]
 		const nativeTreasuryAddress = await getNativeTreasuryAddress(programId, governance.pubkey)
