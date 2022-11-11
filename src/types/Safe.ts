@@ -1,8 +1,11 @@
-export interface Safe {
+export interface SafeInterface {
     chainId: number;
-    rpcUrl: string;
-    safeAddress: string;
-
-    
-
+    rpcURL: string;
+    safeAddress: string | undefined;
+    proposeTransactions(grantName: string, initiateTransactionData: any, wallet: any): Promise<any>;
+    isOwner(safeAddress: string): Promise<boolean>;
+    getOwners (): Promise<any>;
+    getSafeDetails(): Promise<any>;
+    getTokenAndbalance(): Promise<any>;
+    getNextSteps(): string[];
 }

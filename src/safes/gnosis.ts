@@ -5,8 +5,9 @@ import SafeServiceClient from '@gnosis.pm/safe-service-client'
 import { getCeloTokenUSDRate } from '../utils/tokenConversionUtils';
 import { erc20ABI } from 'wagmi'
 import axios from 'axios';
-
-export class gnosis {
+import { createEVMMetaTransactions } from '../utils/gnosisUtils';
+import { SafeInterface } from '../types/Safe';
+export class gnosis implements SafeInterface {
 
 	chainId: number;
 	rpcURL: string;
@@ -18,63 +19,9 @@ export class gnosis {
 		this.safeAddress = safeAddress
 	}
 
-	getNextSteps(): string[] {
-		return ['Open the transaction on Gnosis Safe', 'Sign the transaction created under the Queue section', 'Ask the other multi-sig signers to sign this transaction too']
-	}
+	async proposeTransactions(grantName: string, initiateTransactionData: any, wallet: any): Promise<any>  {
 
-	encodeTransactionData(recipientAddress: string, fundAmount: string, rewardAssetDecimals: number) {
-		const ERC20Interface = new ethers.utils.Interface(erc20ABI)
-		const txData = ERC20Interface.encodeFunctionData('transfer', [
-			recipientAddress,
-			ethers.utils.parseUnits(fundAmount, rewardAssetDecimals)
-		])
-
-		return txData
-	}
-
-	async createEVMMetaTransactions(workspaceSafeChainId: string , gnosisBatchData: any): Promise<any[]> {
-
-		const celoTokensUSDRateMapping = await (await getCeloTokenUSDRate()).data;
-		const readyTxs = gnosisBatchData.map((data: any) => {
-			let tokenUSDRate: number
-			if(workspaceSafeChainId === '42220') {
-				const tokenSelected = data.selectedToken.name.toLowerCase()
-				if(tokenSelected === 'cusd') {
-					tokenUSDRate = celoTokensUSDRateMapping['celo-dollar'].usd
-				} else if(tokenSelected === 'ceuro') {
-					tokenUSDRate = celoTokensUSDRateMapping['celo-euro'].usd
-				} else if(tokenSelected === 'tether') {
-					tokenUSDRate = celoTokensUSDRateMapping['tether'].usd
-				} else if(tokenSelected === 'spcusd') {
-					tokenUSDRate = 1
-				} else if(tokenSelected === 'spCELO') {
-					tokenUSDRate = 1
-				}
-			} else {
-				tokenUSDRate = data.selectedToken.info.fiatConversion
-			}
-
-			const rewardAssetDecimals = data.selectedToken.info.decimals
-			const rewardAssetAddress = data.selectedToken.info.tokenAddress
-			const usdToToken = (data.amount / tokenUSDRate!).toFixed(rewardAssetDecimals)
-
-			// console.log('reward asset address', rewardAssetAddress)
-			logger.info('usd amount, usd rate, usd to token amount', data.amount, tokenUSDRate!, usdToToken)
-			const txData = this.encodeTransactionData(data.to, (usdToToken.toString()), rewardAssetDecimals)
-			const tx = {
-				to: ethers.utils.getAddress(rewardAssetAddress),
-				data: txData,
-				value: '0'
-			}
-			return tx
-		})
-
-		return readyTxs
-	}
-
-	async proposeTransactions(grantName: string, initiateTransactionData: any, wallet: any) {
-
-		const readyToExecuteTxs = await this.createEVMMetaTransactions(this.chainId.toString(), initiateTransactionData)
+		const readyToExecuteTxs = await createEVMMetaTransactions(this.chainId.toString(), initiateTransactionData)
 		console.log('creating gnosis transaction for', readyToExecuteTxs)
 		//@ts-ignore
 		const provider = new ethers.providers.Web3Provider(window.ethereum)
@@ -130,8 +77,6 @@ export class gnosis {
 			// return undefined
 			console.log(e)
 		}
-
-
 	}
 
     async isOwner(safeAddress: string): Promise<boolean> {
@@ -215,5 +160,9 @@ export class gnosis {
 			})
 		})
 		return tokenList;
+	}
+
+	getNextSteps(): string[] {
+		return ['Open the transaction on Gnosis Safe', 'Sign the transaction created under the Queue section', 'Ask the other multi-sig signers to sign this transaction too']
 	}
 }

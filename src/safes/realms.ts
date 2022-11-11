@@ -17,8 +17,9 @@ import { TokenListProvider } from '@solana/spl-token-registry'
 import axios from 'axios';
 import { solanaToUsd } from '../utils/tokenConversionUtils';
 import { solTokenTrxn, splTokenTrxn } from '../utils/realmsUtils';
+import { SafeInterface } from '../types/Safe';
 
-export class realms{
+export class realms implements SafeInterface {
 
 	chainId: number;
 	rpcURL: string;
@@ -131,10 +132,6 @@ export class realms{
 		}	
 	}
 
-	getNextSteps(): string[] {
-		return ['Open the transaction on Realms', 'Sign the newly created proposal', 'Ask all the multi-sig signers to sign the proposal']
-	}
-
 	async getOwners (): Promise<any> {
 		const connection = new Connection(this.rpcURL!, 'recent')
 		const programId = new PublicKey('GovER5Lthms3bLBqWub97yVrMmEogzX7xNjdXpPPCVZw')
@@ -244,4 +241,7 @@ export class realms{
 		}
 	}
 
+	getNextSteps(): string[] {
+		return ['Open the transaction on Realms', 'Sign the newly created proposal', 'Ask all the multi-sig signers to sign the proposal']
+	}
 }
