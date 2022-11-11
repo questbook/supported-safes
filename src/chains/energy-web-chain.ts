@@ -1,4 +1,4 @@
-import { gnosis } from "../utils/gnosis";
+import { gnosis } from "../safes/gnosis";
 
 export class EnergyWebChain extends gnosis {
     chainName: string;

@@ -1,4 +1,4 @@
-import { gnosis } from "../utils/gnosis";
+import { gnosis } from "../safes/gnosis";
 
 export class AvalancheMainnet extends gnosis {
     chainName: string;

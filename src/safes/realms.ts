@@ -1,0 +1,247 @@
+import {
+	getAllTokenOwnerRecords,
+	getGovernanceAccounts,
+	getNativeTreasuryAddress,
+	getRealm,
+	Governance,
+	ProgramAccount,
+	Proposal,
+	pubkeyFilter,
+	TokenOwnerRecord,
+	VoteType,
+	withCreateProposal,
+} from '@solana/spl-governance';
+import { Connection, GetProgramAccountsFilter, PublicKey, TransactionInstruction } from '@solana/web3.js';
+import { TOKEN_PROGRAM_ID } from "@solana/spl-token"
+import { TokenListProvider } from '@solana/spl-token-registry'
+import axios from 'axios';
+import { solanaToUsd } from '../utils/tokenConversionUtils';
+import { solTokenTrxn, splTokenTrxn } from '../utils/realmsUtils';
+
+export class realms{
+
+	chainId: number;
+	rpcURL: string;
+	safeAddress: string;
+	connection: Connection;
+	programId: PublicKey;
+	allProposals: ProgramAccount<Proposal>[];
+
+	constructor(chainId: number, rpcURL: string, safeAddress: string) {
+		this.chainId = chainId;
+		this.rpcURL = rpcURL;
+		this.safeAddress = safeAddress;
+		this.connection = new Connection(rpcURL);
+		this.programId = new PublicKey('GovER5Lthms3bLBqWub97yVrMmEogzX7xNjdXpPPCVZw');
+		this.allProposals = [];
+	}
+
+	async proposeTransactions(grantname: string, transactions: any[], wallet: any): Promise<any> {
+		try{
+			console.log('transactions', transactions)
+
+			const safeAddressPublicKey = new PublicKey(this.safeAddress!);
+			const realmData = await getRealm(this.connection, safeAddressPublicKey)
+			const governances = await getGovernanceAccounts(this.connection, this.programId, Governance, [
+				pubkeyFilter(1, safeAddressPublicKey)!,
+			])
+
+			const governance = governances.filter((gov)=>gov.pubkey.toString()===realmData.account.authority?.toString())[0]
+			const payer : PublicKey = wallet.publicKey
+
+			const tokenOwnerRecord  = await getGovernanceAccounts(
+				this.connection,
+				this.programId,
+				TokenOwnerRecord,
+				[pubkeyFilter(1, realmData.pubkey)!, pubkeyFilter(65, payer)!]
+			);
+			
+			const proposalInstructions: TransactionInstruction[] = []
+
+			const proposalAddress = await withCreateProposal(
+				proposalInstructions,
+				this.programId,
+				2,
+				safeAddressPublicKey,
+				governance.pubkey,
+				tokenOwnerRecord[0].pubkey,
+				`${transactions.length > 1 ? 'Batched Payout - ' : ''} ${grantname} - ${new Date().toDateString()}`,
+				`${grantname}`,
+				tokenOwnerRecord[0].account.governingTokenMint,
+				payer!,
+				governance.account.proposalCount,
+				VoteType.SINGLE_CHOICE,
+				['Approve'],
+				true,
+				payer!
+			)
+
+			const nativeTreasury = await getNativeTreasuryAddress(this.programId, governance.pubkey)
+
+			if(transactions[0].selectedToken.name==="SOL"){
+				await solTokenTrxn(
+					this.connection,
+					this.programId,
+					this.safeAddress,
+					transactions, 
+					nativeTreasury, 
+					proposalInstructions, 
+					governance, 
+					proposalAddress,
+					tokenOwnerRecord,
+					payer)
+			}else{
+				await splTokenTrxn(
+					this.connection,
+					this.programId,
+					this.safeAddress,
+					wallet,
+					transactions, 
+					nativeTreasury, 
+					proposalInstructions, 
+					governance, 
+					proposalAddress,
+					tokenOwnerRecord,
+					payer)
+			}
+
+			return proposalAddress.toString()
+		}catch(e: any){
+			console.log('error', e)
+			return ({'error': e.message})
+		}	
+	}
+
+	async isOwner(address: String): Promise<any> {
+		try{
+			const safeAddressPublicKey = new PublicKey(this.safeAddress!);
+			const tokenownerrecord = await getAllTokenOwnerRecords(this.connection, this.programId, safeAddressPublicKey)
+			let isOwner = false
+			for(let i = 0; i < tokenownerrecord.length; i++) {
+				if(tokenownerrecord[i].account.governingTokenOwner.toString() === address) {
+					isOwner = true
+					break
+				}
+			}
+
+			return isOwner
+		}catch(e: any){
+			console.log('error', e)
+			return ({'error': e.message})
+		}	
+	}
+
+	getNextSteps(): string[] {
+		return ['Open the transaction on Realms', 'Sign the newly created proposal', 'Ask all the multi-sig signers to sign the proposal']
+	}
+
+	async getOwners (): Promise<any> {
+		const connection = new Connection(this.rpcURL!, 'recent')
+		const programId = new PublicKey('GovER5Lthms3bLBqWub97yVrMmEogzX7xNjdXpPPCVZw')
+
+		try {
+			const safeAddressPublicKey = new PublicKey(this.safeAddress!)
+			const tokenownerrecord = await getAllTokenOwnerRecords(connection, programId, safeAddressPublicKey)
+			return tokenownerrecord.map(record => record.account.governingTokenOwner.toString())
+		} catch(e:any){
+			console.log('error', e)
+			return ({'error': e.message})
+		}
+	}
+
+	getSafeDetails = async(): Promise<any> => {
+		const tokenListAndBalance = await this.getTokenAndbalance();
+		let usdAmount = 0;
+		tokenListAndBalance.map((obj:any)=>{
+			usdAmount += obj.usdValueAmount
+		})
+		const owners = await this.getOwners();
+		return {
+			safeAddress: this.safeAddress,
+			networkType: 2,
+			networkId: this.chainId,
+			safeType: 'Realms',
+			safeIcon: '/safes_icons/realms.svg',
+			amount: usdAmount, // 1000
+			isDisabled: false,
+			owners: owners,
+		}
+	}
+
+	async getTokenAndbalance (): Promise<any>{
+
+		try{
+			let tokenList:any[] = [];
+
+			const safeAddressPublicKey = new PublicKey(this.safeAddress!);
+			const connection = new Connection(this.rpcURL!, 'recent')
+			console.log('realms ss', this.rpcURL!)
+			const programId = new PublicKey('GovER5Lthms3bLBqWub97yVrMmEogzX7xNjdXpPPCVZw')
+			const realmsPublicKey = safeAddressPublicKey
+			const realmData = await getRealm(connection, realmsPublicKey)
+			console.log('realms ss', realmData, this.rpcURL!)
+			const governances = await getGovernanceAccounts(connection, programId, Governance, [
+				pubkeyFilter(1, safeAddressPublicKey)!,
+			])
+			const governance = governances.filter((gov)=>gov.pubkey.toString()===realmData.account.authority?.toString())[0]
+			const nativeTreasuryAddress = await getNativeTreasuryAddress(programId, governance.pubkey)
+			// assert(realmData.account.name)
+			const solAmount = (await connection.getAccountInfo(nativeTreasuryAddress))!.lamports / 1000000000
+			const usdAmount = await solanaToUsd(solAmount)
+
+			tokenList.push( {
+				tokenIcon: '/network_icons/solana.svg',
+				tokenName: 'SOL',
+				tokenValueAmount: solAmount,
+				usdValueAmount: usdAmount, 
+				mintAddress: nativeTreasuryAddress,
+				info: undefined,
+			})
+
+			const filters:GetProgramAccountsFilter[] = [
+				{
+				dataSize: 165,    //size of account (bytes)
+				},
+				{
+				memcmp: {
+					offset: 32,     //location of our query in the account (bytes)
+					bytes: nativeTreasuryAddress.toString(),  //our search criteria, a base58 encoded string
+				}            
+				}
+			];
+			const treasuryAccInfo = await connection.getParsedProgramAccounts(TOKEN_PROGRAM_ID, {filters:filters})
+
+			const allTokens = await new TokenListProvider().resolve()
+			const allTokenList = allTokens.filterByClusterSlug('mainnet-beta').getList()
+			
+			await Promise.all(treasuryAccInfo.map(async (info: any)=>{
+					const tokenInfo = info.account.data?.parsed?.info;
+					const tokenCoinGeckoInfo = allTokenList.find((x)=>x.address===tokenInfo?.mint)
+					// console.log('tokenListAndBalance - tokenCoinGeckoInfo', tokenCoinGeckoInfo)
+					const tokenUsdValue = await axios.get(
+						`https://api.coingecko.com/api/v3/simple/price?ids=${tokenCoinGeckoInfo?.extensions?.coingeckoId}&vs_currencies=usd`
+					)
+					
+					// console.log('tokenListAndBalance - tokenUsdValue', tokenUsdValue?.data[tokenCoinGeckoInfo.extensions?.coingeckoId])
+					if(tokenInfo?.mint && tokenCoinGeckoInfo && tokenUsdValue?.data){
+						tokenList.push( {
+							tokenIcon: tokenCoinGeckoInfo.logoURI,
+							tokenName: tokenCoinGeckoInfo.name,
+							symbol: tokenCoinGeckoInfo.name, 
+							tokenValueAmount: tokenInfo?.tokenAmount?.uiAmount,
+							usdValueAmount: tokenInfo?.tokenAmount?.uiAmount * tokenUsdValue?.data[tokenCoinGeckoInfo.extensions?.coingeckoId!]?.usd, 
+							mintAddress: tokenInfo?.mint,
+							info: tokenInfo,
+						})	
+					}
+				}))
+			
+
+			return tokenList;
+		}catch(e:any){
+			console.log('error', e)
+			return ({'error': e.message})
+		}
+	}
+
+}

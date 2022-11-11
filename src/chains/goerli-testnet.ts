@@ -1,4 +1,4 @@
-import { gnosis } from "../utils/gnosis";
+import { gnosis } from "../safes/gnosis";
 
 export class GoerliTestnet extends gnosis {
     chainName: string;

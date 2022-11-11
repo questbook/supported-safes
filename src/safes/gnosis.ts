@@ -2,7 +2,7 @@ import { ethers, logger } from 'ethers'
 import Safe, { ContractNetworksConfig } from '@gnosis.pm/safe-core-sdk'
 import EthersAdapter from '@gnosis.pm/safe-ethers-lib'
 import SafeServiceClient from '@gnosis.pm/safe-service-client'
-import { getCeloTokenUSDRate } from './tokenConversionUtils';
+import { getCeloTokenUSDRate } from '../utils/tokenConversionUtils';
 import { erc20ABI } from 'wagmi'
 import axios from 'axios';
 
@@ -18,19 +18,9 @@ export class gnosis {
 		this.safeAddress = safeAddress
 	}
 
-    isValidRecipientAddress(address: String): Promise<boolean> {
-		return new Promise((resolve, reject) => resolve(ethers.utils.isAddress(address.toString())))
-	}
 	getNextSteps(): string[] {
 		return ['Open the transaction on Gnosis Safe', 'Sign the transaction created under the Queue section', 'Ask the other multi-sig signers to sign this transaction too']
 	}
-	initialiseAllProposals(): void {
-		throw new Error('Method not implemented.')
-	}
-
-	// proposeTransactions(grantName: string, transactions: any, wallet: any): Promise<string> {
-	// 	throw new Error('Method not implemented.')
-	// }
 
 	encodeTransactionData(recipientAddress: string, fundAmount: string, rewardAssetDecimals: number) {
 		const ERC20Interface = new ethers.utils.Interface(erc20ABI)
@@ -177,28 +167,6 @@ export class gnosis {
 
 		const userAddress = await signer.getAddress()
 		return await safeSdk.isOwner(userAddress)
-	}
-
-    async getTransactionHashStatus(safeTxHash: string): Promise<any> {
-
-		const safeAddress = this.safeAddress
-		// const safeTxnHash = "0x6b93a22e3929062eadf085a6a150d6bf59d0690ff93b0921cbe1c313708be83c"
-		//@ts-ignore
-		const provider = new ethers.providers.Web3Provider(window.ethereum)
-		await provider.send('eth_requestAccounts', [])
-
-		const signer = provider.getSigner()
-		const ethAdapter = new EthersAdapter({
-			ethers,
-			signer,
-		})
-		const safeService = new SafeServiceClient({ txServiceUrl: this.rpcURL, ethAdapter })
-		const txnDetails = await safeService.getTransaction(safeTxHash)
-		if (txnDetails.isExecuted) {
-			return { ...txnDetails, status: 1 }
-		} else {
-			return null
-		}
 	}
 
 	async getOwners (): Promise<any> {

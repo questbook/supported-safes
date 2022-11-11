@@ -1,4 +1,4 @@
-import { realms } from "../utils/realms";
+import { realms } from "../safes/realms";
 
 export class SolanaDevnet extends realms {
     chainName: string;

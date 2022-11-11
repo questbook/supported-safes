@@ -1,4 +1,4 @@
-import { gnosis } from "../utils/gnosis";
+import { gnosis } from "../safes/gnosis";
 
 export class BinanceMainnet extends gnosis {
     chainName: string;
