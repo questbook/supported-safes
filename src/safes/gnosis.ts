@@ -6,7 +6,7 @@ import { getCeloTokenUSDRate } from '../utils/tokenConversionUtils';
 import { erc20ABI } from 'wagmi'
 import axios from 'axios';
 import { createEVMMetaTransactions } from '../utils/gnosisUtils';
-import { SafeInterface } from '../types/Safe';
+import { errorMessage, SafeDetailsInterface, SafeInterface, TokenDetailsInterface } from '../types/Safe';
 export class gnosis implements SafeInterface {
 
 	chainId: number;
@@ -19,7 +19,7 @@ export class gnosis implements SafeInterface {
 		this.safeAddress = safeAddress
 	}
 
-	async proposeTransactions(grantName: string, initiateTransactionData: any, wallet: any): Promise<any>  {
+	async proposeTransactions(grantName: string, initiateTransactionData: any, wallet: any): Promise<string| errorMessage>  {
 
 		const readyToExecuteTxs = await createEVMMetaTransactions(this.chainId.toString(), initiateTransactionData)
 		console.log('creating gnosis transaction for', readyToExecuteTxs)
@@ -76,6 +76,7 @@ export class gnosis implements SafeInterface {
 		} catch (e: any) {
 			// return undefined
 			console.log(e)
+			return ({error: e.message})
 		}
 	}
 
@@ -114,13 +115,13 @@ export class gnosis implements SafeInterface {
 		return await safeSdk.isOwner(userAddress)
 	}
 
-	async getOwners (): Promise<any> {
+	async getOwners (): Promise<string[]> {
 		const gnosisUrl = `${this.rpcURL}/api/v1/safes/${this.safeAddress}`
 		const response = await axios.get(gnosisUrl)
 		return response.data.owners;
 	}
 
-	async getSafeDetails(): Promise<any> {
+	async getSafeDetails(): Promise<SafeDetailsInterface> {
 		const tokenListAndBalance = await this.getTokenAndbalance();
 		let usdAmount = 0;
 		tokenListAndBalance.map((obj:any)=>{
@@ -128,7 +129,7 @@ export class gnosis implements SafeInterface {
 		})
 		const owners = await this.getOwners();
 		return {
-			safeAddress: this.safeAddress,
+			safeAddress: this.safeAddress!,
 			networkType: 1,
 			networkId: this.chainId,
 			safeType: 'Gnosis',
@@ -139,7 +140,7 @@ export class gnosis implements SafeInterface {
 		}
 	}
 
-	async getTokenAndbalance(): Promise<any> {
+	async getTokenAndbalance(): Promise<TokenDetailsInterface[]> {
 		const tokenList: any[] = []
 		const gnosisUrl = `${this.rpcURL}/api/v1/safes/${this.safeAddress}/balances/usd`
 		const response = await axios.get(gnosisUrl)

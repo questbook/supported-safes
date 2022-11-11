@@ -17,7 +17,7 @@ import { TokenListProvider } from '@solana/spl-token-registry'
 import axios from 'axios';
 import { solanaToUsd } from '../utils/tokenConversionUtils';
 import { solTokenTrxn, splTokenTrxn } from '../utils/realmsUtils';
-import { SafeInterface } from '../types/Safe';
+import { errorMessage, SafeDetailsInterface, SafeInterface, TokenDetailsInterface } from '../types/Safe';
 
 export class realms implements SafeInterface {
 
@@ -37,10 +37,8 @@ export class realms implements SafeInterface {
 		this.allProposals = [];
 	}
 
-	async proposeTransactions(grantname: string, transactions: any[], wallet: any): Promise<any> {
+	async proposeTransactions(grantname: string, transactions: any[], wallet: any): Promise<string|errorMessage> {
 		try{
-			console.log('transactions', transactions)
-
 			const safeAddressPublicKey = new PublicKey(this.safeAddress!);
 			const realmData = await getRealm(this.connection, safeAddressPublicKey)
 			const governances = await getGovernanceAccounts(this.connection, this.programId, Governance, [
@@ -109,7 +107,7 @@ export class realms implements SafeInterface {
 			return proposalAddress.toString()
 		}catch(e: any){
 			console.log('error', e)
-			return ({'error': e.message})
+			return ({error: e.message})
 		}	
 	}
 
@@ -128,11 +126,11 @@ export class realms implements SafeInterface {
 			return isOwner
 		}catch(e: any){
 			console.log('error', e)
-			return ({'error': e.message})
+			return ({error: e.message})
 		}	
 	}
 
-	async getOwners (): Promise<any> {
+	async getOwners (): Promise<string[] | errorMessage> {
 		const connection = new Connection(this.rpcURL!, 'recent')
 		const programId = new PublicKey('GovER5Lthms3bLBqWub97yVrMmEogzX7xNjdXpPPCVZw')
 
@@ -142,11 +140,11 @@ export class realms implements SafeInterface {
 			return tokenownerrecord.map(record => record.account.governingTokenOwner.toString())
 		} catch(e:any){
 			console.log('error', e)
-			return ({'error': e.message})
+			return ({error: e.message})
 		}
 	}
 
-	getSafeDetails = async(): Promise<any> => {
+	getSafeDetails = async(): Promise<SafeDetailsInterface> => {
 		const tokenListAndBalance = await this.getTokenAndbalance();
 		let usdAmount = 0;
 		tokenListAndBalance.map((obj:any)=>{
@@ -161,11 +159,11 @@ export class realms implements SafeInterface {
 			safeIcon: '/safes_icons/realms.svg',
 			amount: usdAmount, // 1000
 			isDisabled: false,
-			owners: owners,
+			owners: owners as string[],
 		}
 	}
 
-	async getTokenAndbalance (): Promise<any>{
+	async getTokenAndbalance (): Promise<TokenDetailsInterface[] | errorMessage>{
 
 		try{
 			let tokenList:any[] = [];
@@ -182,7 +180,6 @@ export class realms implements SafeInterface {
 			])
 			const governance = governances.filter((gov)=>gov.pubkey.toString()===realmData.account.authority?.toString())[0]
 			const nativeTreasuryAddress = await getNativeTreasuryAddress(programId, governance.pubkey)
-			// assert(realmData.account.name)
 			const solAmount = (await connection.getAccountInfo(nativeTreasuryAddress))!.lamports / 1000000000
 			const usdAmount = await solanaToUsd(solAmount)
 
@@ -197,12 +194,12 @@ export class realms implements SafeInterface {
 
 			const filters:GetProgramAccountsFilter[] = [
 				{
-				dataSize: 165,    //size of account (bytes)
+				dataSize: 165,
 				},
 				{
 				memcmp: {
-					offset: 32,     //location of our query in the account (bytes)
-					bytes: nativeTreasuryAddress.toString(),  //our search criteria, a base58 encoded string
+					offset: 32,    
+					bytes: nativeTreasuryAddress.toString(),  
 				}            
 				}
 			];
@@ -214,12 +211,10 @@ export class realms implements SafeInterface {
 			await Promise.all(treasuryAccInfo.map(async (info: any)=>{
 					const tokenInfo = info.account.data?.parsed?.info;
 					const tokenCoinGeckoInfo = allTokenList.find((x)=>x.address===tokenInfo?.mint)
-					// console.log('tokenListAndBalance - tokenCoinGeckoInfo', tokenCoinGeckoInfo)
 					const tokenUsdValue = await axios.get(
 						`https://api.coingecko.com/api/v3/simple/price?ids=${tokenCoinGeckoInfo?.extensions?.coingeckoId}&vs_currencies=usd`
 					)
-					
-					// console.log('tokenListAndBalance - tokenUsdValue', tokenUsdValue?.data[tokenCoinGeckoInfo.extensions?.coingeckoId])
+
 					if(tokenInfo?.mint && tokenCoinGeckoInfo && tokenUsdValue?.data){
 						tokenList.push( {
 							tokenIcon: tokenCoinGeckoInfo.logoURI,
