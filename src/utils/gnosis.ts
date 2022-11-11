@@ -201,26 +201,34 @@ export class gnosis {
 		}
 	}
 
+	async getOwners (): Promise<any> {
+		const gnosisUrl = `${this.rpcURL}/api/v1/safes/${this.safeAddress}`
+		const response = await axios.get(gnosisUrl)
+		return response.data.owners;
+	}
 
-	async getSafeDetails(address: String): Promise<any> {
-		//@ts-ignore
-		const provider = new ethers.providers.Web3Provider(window.ethereum)
-		await provider.send('eth_requestAccounts', [])
-
-		const signer = provider.getSigner()
-		const ethAdapter = new EthersAdapter({
-			ethers,
-			signer,
+	async getSafeDetails(): Promise<any> {
+		const tokenListAndBalance = await this.getTokenAndbalance();
+		let usdAmount = 0;
+		tokenListAndBalance.map((obj:any)=>{
+			usdAmount += obj.usdValueAmount
 		})
-		const safeService = new SafeServiceClient({ txServiceUrl: this.rpcURL, ethAdapter })
-		const balanceInUsd = await safeService.getUsdBalances(this.safeAddress!)
-		return balanceInUsd
+		const owners = await this.getOwners();
+		return {
+			safeAddress: this.safeAddress,
+			networkType: 1,
+			networkId: this.chainId,
+			safeType: 'Gnosis',
+			safeIcon: '/safes_icons/gnosis.svg',
+			amount: usdAmount, // 1000
+			isDisabled: false,
+			owners: owners,
+		}
 	}
 
 	async getTokenAndbalance(): Promise<any> {
 		const tokenList: any[] = []
 		const gnosisUrl = `${this.rpcURL}/api/v1/safes/${this.safeAddress}/balances/usd`
-		console.log('fetching tokens from ', gnosisUrl)
 		const response = await axios.get(gnosisUrl)
 		const tokensFetched = response.data
 		tokensFetched.filter((token: any) => token.token).map((token: any) => {

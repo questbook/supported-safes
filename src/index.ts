@@ -8,7 +8,26 @@ export class SupportedSafes {
         }
     }
     
-    getSafeByAddress(safeAddress: string) {
-        
+    async getSafeByAddress(address: string) {
+        let safeData = [];
+        const CHAIN_IDS = Object.keys(SupportedSafesInfo);
+
+        for (let i = 0; i < CHAIN_IDS.length; i++) {
+            const chainId = parseInt(CHAIN_IDS[i]);
+            const safeInfo = SupportedSafesInfo[chainId];
+            if(address){
+                const safe = new safeInfo.class(address);
+                try{
+                    const res = await safe.getSafeDetails();
+                    if (res) {
+                        safeData.push({...res, networkName: safe.chainName, networkIcon: safe.chainLogo});
+                    }
+                }catch(e){
+                    console.log(e)
+                }
+            }
+        }
+
+        return safeData;
     }
 }

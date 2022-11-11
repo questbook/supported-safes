@@ -95,6 +95,12 @@ const SupportedSafesInfo: {[chainId: number]: any} = {
         rpcURL: "https://safe-transaction.aurora.gnosis.io/",
         class: AuroraMainnet,
     },
+    100: {
+        name: "Gnosis",
+        chainId: 100,
+        rpcURL: "https://safe-transaction.xdai.gnosis.io/",
+        class: GnosisMainnet,
+    },
     900001: {
         name: "Solana Mainnet",
         chainId: 900001,
@@ -106,12 +112,6 @@ const SupportedSafesInfo: {[chainId: number]: any} = {
         chainId: 900002,
         rpcURL: "https://mango.devnet.rpcpool.com",
         class: SolanaDevnet,
-    },
-    100: {
-        name: "Gnosis",
-        chainId: 100,
-        rpcURL: "https://safe-transaction.xdai.gnosis.io/",
-        class: GnosisMainnet,
     },
 }
 
