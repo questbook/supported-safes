@@ -145,7 +145,7 @@ export class realms implements SafeInterface {
 	}
 
 	getSafeDetails = async(): Promise<SafeDetailsInterface> => {
-		const tokenListAndBalance = await this.getTokenAndbalance();
+		const tokenListAndBalance = await this.getTokenAndbalance() as TokenDetailsInterface[];
 		let usdAmount = 0;
 		tokenListAndBalance.map((obj:any)=>{
 			usdAmount += obj.usdValueAmount
