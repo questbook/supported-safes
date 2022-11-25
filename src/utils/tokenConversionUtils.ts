@@ -24,6 +24,12 @@ const solanaToUsd = async(solAmount: number) => {
     return Math.floor(solToUsd * solAmount)
 }
 
+const solanaToUsdRate = async() => {
+    const url = 'https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd'
+    const solToUsd = parseFloat((await axios.get(url)).data.solana.usd)
+    return solToUsd
+}
+
 const usdToSolana = async(usdAmount: number) => {
     const url = 'https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd'
     const usdToSolana = parseFloat((await axios.get(url)).data.solana.usd)
@@ -32,8 +38,8 @@ const usdToSolana = async(usdAmount: number) => {
 
 const getCeloTokenUSDRate = async () => {
     console.log('axios', axios);
-	const response = await axios.get(`https://api.coingecko.com/api/v3/simple/price?ids=celo-dollar%2Ctether%2Ccelo-euro&vs_currencies=usd`)
+	const response = await axios.get(`https://api.coingecko.com/api/v3/simple/price?ids=celo-dollar%2Ccelo%2Ctether%2Ccelo-euro&vs_currencies=usd`)
 	return response;
 }
 
-export {solanaToUsd, solanaToUsdOnDate, usdToSolana, getCeloTokenUSDRate, getDateInDDMMYYYY}
+export {solanaToUsd, solanaToUsdRate, solanaToUsdOnDate, usdToSolana, getCeloTokenUSDRate, getDateInDDMMYYYY}

@@ -15,7 +15,7 @@ import { Connection, GetProgramAccountsFilter, PublicKey, TransactionInstruction
 import { TOKEN_PROGRAM_ID } from "@solana/spl-token"
 import { TokenListProvider } from '@solana/spl-token-registry'
 import axios from 'axios';
-import { solanaToUsd } from '../utils/tokenConversionUtils';
+import { solanaToUsd, solanaToUsdRate } from '../utils/tokenConversionUtils';
 import { solTokenTrxn, splTokenTrxn } from '../utils/realmsUtils';
 import { errorMessage, SafeDetailsInterface, SafeInterface, TokenDetailsInterface } from '../types/Safe';
 
@@ -77,7 +77,7 @@ export class realms implements SafeInterface {
 
 			const nativeTreasury = await getNativeTreasuryAddress(this.programId, governance.pubkey)
 
-			if(transactions[0].selectedToken.name==="SOL"){
+			if(transactions[0].selectedToken.tokenName==="SOL"){
 				await solTokenTrxn(
 					this.connection,
 					this.programId,
@@ -181,15 +181,16 @@ export class realms implements SafeInterface {
 			const governance = governances.filter((gov)=>gov.pubkey.toString()===realmData.account.authority?.toString())[0]
 			const nativeTreasuryAddress = await getNativeTreasuryAddress(programId, governance.pubkey)
 			const solAmount = (await connection.getAccountInfo(nativeTreasuryAddress))!.lamports / 1000000000
-			const usdAmount = await solanaToUsd(solAmount)
+			const solUSDRate = await solanaToUsdRate()
 
 			tokenList.push( {
 				tokenIcon: '/network_icons/solana.svg',
 				tokenName: 'SOL',
 				tokenValueAmount: solAmount,
-				usdValueAmount: usdAmount, 
+				usdValueAmount: solUSDRate * solAmount, 
 				mintAddress: nativeTreasuryAddress,
 				info: undefined,
+				fiatConversion: solUSDRate
 			})
 
 			const filters:GetProgramAccountsFilter[] = [
@@ -224,6 +225,7 @@ export class realms implements SafeInterface {
 							usdValueAmount: tokenInfo?.tokenAmount?.uiAmount * tokenUsdValue?.data[tokenCoinGeckoInfo.extensions?.coingeckoId!]?.usd, 
 							mintAddress: tokenInfo?.mint,
 							info: tokenInfo,
+							fiatConversion: tokenUsdValue?.data[tokenCoinGeckoInfo.extensions?.coingeckoId!]?.usd
 						})	
 					}
 				}))

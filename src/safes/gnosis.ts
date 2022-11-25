@@ -145,21 +145,45 @@ export class gnosis implements SafeInterface {
 		const gnosisUrl = `${this.rpcURL}/api/v1/safes/${this.safeAddress}/balances/usd`
 		const response = await axios.get(gnosisUrl)
 		const tokensFetched = response.data
-		tokensFetched.filter((token: any) => token.token).map((token: any) => {
-			const tokenBalance = (ethers.utils.formatUnits(token.balance, token.token.decimals)).toString()
-			tokenList.push({
-				tokenIcon: token.token.logoUri,
-				tokenName: token.token.symbol,
-				tokenValueAmount: `${token.fiatBalance == '0.0' ? tokenBalance : `${token.fiatBalance} usd`}`,
-				usdValueAmount: token.fiatBalance,
-				mintAddress: '',
-				info: {
-					decimals: token.token.decimals,
-					tokenAddress: token.tokenAddress,
-					fiatConversion: token.fiatConversion
-				},
+		const celoTokensUSDRateMapping = await (await getCeloTokenUSDRate()).data;
+		console.log('celoTokensUSDRateMapping', celoTokensUSDRateMapping)
+		Promise.all(
+			tokensFetched.filter((token: any) => token.token).map((token: any) => {
+				console.log('token', token)
+				let tokenUSDRate = 0;
+				if(token.token.symbol === 'cUSD') {
+					tokenUSDRate = celoTokensUSDRateMapping['celo-dollar'].usd
+				} else if(token.token.symbol === 'CELO') {
+					tokenUSDRate = celoTokensUSDRateMapping['celo'].usd
+				} else if(token.token.symbol === 'cEURO') {
+					tokenUSDRate = celoTokensUSDRateMapping['celo-euro'].usd
+				} else if(token.token.symbol === 'tether') {
+					token = celoTokensUSDRateMapping['tether'].usd
+				} else if(token.token.symbol === 'spcusd') {
+					tokenUSDRate = 0
+				} else if(token.token.symbol === 'spCELO') {
+					tokenUSDRate = 0
+				}
+				console.log('tokenUSDRate', tokenUSDRate)
+				const tokenBalance = (ethers.utils.formatUnits(token.balance, token.token.decimals)).toString()
+				const tokenUSDBalance = parseInt(token.fiatBalance) === 0 ? parseFloat(tokenBalance)*tokenUSDRate : parseFloat(token.fiatBalance)
+				console.log('tokenUSDBalance', tokenUSDBalance)
+				tokenList.push({
+					tokenIcon: token.token.logoUri,
+					tokenName: token.token.symbol,
+					tokenValueAmount: tokenBalance,
+					usdValueAmount: tokenUSDBalance,
+					mintAddress: '',
+					fiatConversion: parseInt(token.fiatConversion) === 0  ? tokenUSDRate : token.fiatConversion,
+					info: {
+						decimals: token.token.decimals,
+						tokenAddress: token.tokenAddress,
+						fiatConversion: !token.fiatConversion && token.fiatConversion === 0  ? tokenUSDRate : token.fiatConversion
+					},
+				})
 			})
-		})
+		);
+		console.log('tokenList', tokenList)
 		return tokenList;
 	}
 

@@ -27,12 +27,12 @@ export const createEVMMetaTransactions = async (workspaceSafeChainId: string , g
 				} else if(tokenSelected === 'tether') {
 					tokenUSDRate = celoTokensUSDRateMapping['tether'].usd
 				} else if(tokenSelected === 'spcusd') {
-					tokenUSDRate = 1
+					tokenUSDRate = 0
 				} else if(tokenSelected === 'spCELO') {
-					tokenUSDRate = 1
+					tokenUSDRate = 0
 				}
 			} else {
-				tokenUSDRate = data.selectedToken.info.fiatConversion
+				tokenUSDRate = data.selectedToken.fiatConversion
 			}
 
 			const rewardAssetDecimals = data.selectedToken.info.decimals
