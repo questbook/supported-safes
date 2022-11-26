@@ -19,7 +19,7 @@ export const createEVMMetaTransactions = async (workspaceSafeChainId: string , g
 		const readyTxs = gnosisBatchData.map((data: any) => {
 			let tokenUSDRate: number
 			if(workspaceSafeChainId === '42220') {
-				const tokenSelected = data.selectedToken.name.toLowerCase()
+				const tokenSelected = data.selectedToken?.tokenName?.toLowerCase()
 				if(tokenSelected === 'cusd') {
 					tokenUSDRate = celoTokensUSDRateMapping['celo-dollar'].usd
 				} else if(tokenSelected === 'ceuro') {
