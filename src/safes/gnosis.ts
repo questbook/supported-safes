@@ -82,7 +82,7 @@ export class gnosis implements SafeInterface {
 		}
 	}
 
-    async isOwner(safeAddress: string): Promise<boolean> {
+    async isOwner(userAddress: string): Promise<boolean> {
 		//@ts-ignore
 		const provider = new ethers.providers.Web3Provider(window.ethereum)
 		await provider.send('eth_requestAccounts', [])
@@ -94,6 +94,8 @@ export class gnosis implements SafeInterface {
 		})
 
 		let safeSdk
+
+		console.log('safe addrees', this.safeAddress, this.chainId, signer)
 
 		if (this.chainId === 40) {
 			const id = await ethAdapter.getChainId()
@@ -109,15 +111,17 @@ export class gnosis implements SafeInterface {
 				}
 			}
 
-			safeSdk = await Safe.create({ ethAdapter, safeAddress, contractNetworks })
+			safeSdk = await Safe.create({ ethAdapter, safeAddress: this.safeAddress!, contractNetworks })
 
 		} else {
-			safeSdk = await Safe.create({ ethAdapter, safeAddress })
-
+			safeSdk = await Safe.create({ ethAdapter, safeAddress: this.safeAddress! })
 		}
 
-		const userAddress = await signer.getAddress()
-		return await safeSdk.isOwner(userAddress)
+		// const userAddresses = await signer.getAddress()
+		// console.log('user address', userAddresses)
+		const res = await safeSdk.isOwner(userAddress)
+		console.log('is owner', res)
+		return res
 	}
 
 	async getOwners (): Promise<string[]> {
