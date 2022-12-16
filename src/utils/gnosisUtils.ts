@@ -4,6 +4,7 @@ import { getCeloTokenUSDRate } from "./tokenConversionUtils"
 
 
 export const encodeTransactionData = (recipientAddress: string, fundAmount: string, rewardAssetDecimals: number) =>  {
+	console.log('params for encodeTransactionData' ,fundAmount, rewardAssetDecimals)
     const ERC20Interface = new ethers.utils.Interface(erc20ABI)
     const txData = ERC20Interface.encodeFunctionData('transfer', [
         recipientAddress,
@@ -17,7 +18,8 @@ export const createEVMMetaTransactions = async (workspaceSafeChainId: string , g
 
 		const celoTokensUSDRateMapping = await (await getCeloTokenUSDRate()).data;
 		const readyTxs = gnosisBatchData.map((data: any) => {
-			let tokenUSDRate: number
+			let tokenUSDRate: number = 0
+			console.log('selectedToken', data.selectedToken)
 			if(workspaceSafeChainId === '42220') {
 				const tokenSelected = data.selectedToken?.tokenName?.toLowerCase()
 				if(tokenSelected === 'cusd') {
@@ -32,12 +34,14 @@ export const createEVMMetaTransactions = async (workspaceSafeChainId: string , g
 					tokenUSDRate = 0
 				}
 			} else {
-				tokenUSDRate = data.selectedToken.fiatConversion
+				tokenUSDRate = data.selectedToken.info.fiatConversion
 			}
 
+		
 			const rewardAssetDecimals = data.selectedToken.info.decimals
 			const rewardAssetAddress = data.selectedToken.info.tokenAddress
-			const usdToToken = (data.amount / tokenUSDRate!).toFixed(rewardAssetDecimals)
+			const usdToToken = (data.amount / tokenUSDRate).toFixed(rewardAssetDecimals)
+			console.log('usdToToken', usdToToken, tokenUSDRate)
 
 			// console.log('reward asset address', rewardAssetAddress)
 			logger.info('usd amount, usd rate, usd to token amount', data.amount, tokenUSDRate!, usdToToken)
