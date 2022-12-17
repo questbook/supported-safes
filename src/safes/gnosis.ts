@@ -142,7 +142,7 @@ export class gnosis implements SafeInterface {
 
 	async getTokenAndbalance(): Promise<TokenDetailsInterface[]> {
 		const tokenList: any[] = []
-		const gnosisUrl = `${this.rpcURL}/api/v1/safes/${this.safeAddress}/balances/usd`
+		const gnosisUrl = `${this.rpcURL}/api/v1/safes/${ethers.utils.getAddress(this.safeAddress!)}/balances/usd`
 		const response = await axios.get(gnosisUrl)
 		const tokensFetched = response.data
 		const celoTokensUSDRateMapping = await (await getCeloTokenUSDRate()).data;
