@@ -15,7 +15,7 @@ export class gnosis implements SafeInterface {
 	constructor(chainId: number, rpcURL: string, safeAddress: string) {
 		this.chainId = chainId
 		this.rpcURL = rpcURL
-		this.safeAddress = safeAddress
+		this.safeAddress = ethers.utils.getAddress(safeAddress)
 	}
 
 	async proposeTransactions(grantName: string, initiateTransactionData: any, wallet: any): Promise<string| errorMessage>  {
@@ -147,11 +147,10 @@ export class gnosis implements SafeInterface {
 
 	async getTokenAndbalance(): Promise<TokenDetailsInterface[]> {
 		const tokenList: any[] = []
-		const gnosisUrl = `${this.rpcURL}/api/v1/safes/${ethers.utils.getAddress(this.safeAddress!)}/balances/usd`
+		const gnosisUrl = `${this.rpcURL}/api/v1/safes/${this.safeAddress}/balances/usd`
 		const response = await axios.get(gnosisUrl)
 		const tokensFetched = response.data
 		const celoTokensUSDRateMapping = await (await getCeloTokenUSDRate()).data;
-		console.log('celoTokensUSDRateMapping', celoTokensUSDRateMapping)
 		Promise.all(
 			tokensFetched.filter((token: any) => token.token).map((token: any) => {
 				console.log('token', token)
@@ -169,10 +168,8 @@ export class gnosis implements SafeInterface {
 				} else if(token.token.symbol === 'spCELO') {
 					tokenUSDRate = 0
 				}
-				console.log('tokenUSDRate', tokenUSDRate)
 				const tokenBalance = (ethers.utils.formatUnits(token.balance, token.token.decimals)).toString()
 				const tokenUSDBalance = parseInt(token.fiatBalance) === 0 ? parseFloat(tokenBalance)*tokenUSDRate : parseFloat(token.fiatBalance)
-				console.log('tokenUSDBalance', tokenUSDBalance)
 				tokenList.push({
 					tokenIcon: token.token.logoUri,
 					tokenName: token.token.symbol,
