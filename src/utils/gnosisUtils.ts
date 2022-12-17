@@ -34,17 +34,13 @@ export const createEVMMetaTransactions = async (workspaceSafeChainId: string , g
 					tokenUSDRate = 0
 				}
 			} else {
-				tokenUSDRate = data.selectedToken.info.fiatConversion
+				tokenUSDRate = data.selectedToken.fiatConversion
 			}
 
-		
 			const rewardAssetDecimals = data.selectedToken.info.decimals
 			const rewardAssetAddress = data.selectedToken.info.tokenAddress
 			const usdToToken = (data.amount / tokenUSDRate).toFixed(rewardAssetDecimals)
-			console.log('usdToToken', usdToToken, tokenUSDRate)
 
-			// console.log('reward asset address', rewardAssetAddress)
-			logger.info('usd amount, usd rate, usd to token amount', data.amount, tokenUSDRate!, usdToToken)
 			const txData = encodeTransactionData(data.to, (usdToToken.toString()), rewardAssetDecimals)
 			const tx = {
 				to: ethers.utils.getAddress(rewardAssetAddress),

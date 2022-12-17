@@ -175,15 +175,15 @@ export class gnosis implements SafeInterface {
 				}
 				console.log('tokenUSDRate', tokenUSDRate)
 				const tokenBalance = (ethers.utils.formatUnits(token.balance, token.token.decimals)).toString()
-				const tokenUSDBalance = parseInt(token.fiatBalance) === 0 ? parseFloat(tokenBalance)*tokenUSDRate : parseFloat(token.fiatBalance)
-				console.log('tokenUSDBalance', tokenUSDBalance)
+				const tokenUSDBalance = parseFloat(token.fiatBalance) > 0 ? parseFloat(token.fiatBalance) : parseFloat(tokenBalance)*tokenUSDRate
+				console.log('tokenUSDBalance', tokenUSDBalance, parseFloat(token.fiatBalance))
 				tokenList.push({
 					tokenIcon: token.token.logoUri,
 					tokenName: token.token.symbol,
 					tokenValueAmount: tokenBalance,
 					usdValueAmount: tokenUSDBalance,
 					mintAddress: '',
-					fiatConversion: parseInt(token.fiatConversion) === 0  ? tokenUSDRate : token.fiatConversion,
+					fiatConversion: parseFloat(token.fiatConversion) > 0  ? token.fiatConversion : tokenUSDRate,
 					info: {
 						decimals: token.token.decimals,
 						tokenAddress: token.tokenAddress,
