@@ -1,9 +1,8 @@
 import { ethers, logger } from 'ethers'
-import Safe, { ContractNetworksConfig } from '@gnosis.pm/safe-core-sdk'
-import EthersAdapter from '@gnosis.pm/safe-ethers-lib'
-import SafeServiceClient from '@gnosis.pm/safe-service-client'
+import Safe, { ContractNetworksConfig } from '@safe-global/safe-core-sdk'
+import EthersAdapter from '@safe-global/safe-ethers-lib'
+import SafeServiceClient from '@safe-global/safe-service-client'
 import { getCeloTokenUSDRate } from '../utils/tokenConversionUtils';
-import { erc20ABI } from 'wagmi'
 import axios from 'axios';
 import { createEVMMetaTransactions } from '../utils/gnosisUtils';
 import { errorMessage, SafeDetailsInterface, SafeInterface, TokenDetailsInterface } from '../types/Safe';
@@ -30,7 +29,7 @@ export class gnosis implements SafeInterface {
 		const signer = provider.getSigner()
 		const ethAdapter = new EthersAdapter({
 			ethers,
-			signer,
+			signerOrProvider: signer,
 		})
 		const safeService = new SafeServiceClient({ txServiceUrl: this.rpcURL, ethAdapter })
 		// const safeFactory = await SafeFactory.create({ ethAdapter })
@@ -43,7 +42,10 @@ export class gnosis implements SafeInterface {
 					multiSendAddress: '0xA238CBeb142c10Ef7Ad8442C6D1f9E89e07e7761',
 					safeMasterCopyAddress: '0xe591ae490dcc235f420fb7ae3239e0df3ae2048f',
 					safeProxyFactoryAddress: '0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2',
-					multiSendCallOnlyAddress: '0x40A2aCCbd92BCA938b02010E17A5b8929b49130D'
+					multiSendCallOnlyAddress: '0x40A2aCCbd92BCA938b02010E17A5b8929b49130D',
+					createCallAddress: '',
+					fallbackHandlerAddress: '',
+					signMessageLibAddress: '',
 				}
 			}
 
@@ -88,7 +90,7 @@ export class gnosis implements SafeInterface {
 		const signer = provider.getSigner()
 		const ethAdapter = new EthersAdapter({
 			ethers,
-			signer,
+			signerOrProvider: signer,
 		})
 
 		let safeSdk
@@ -100,7 +102,10 @@ export class gnosis implements SafeInterface {
 					multiSendAddress: '0xA238CBeb142c10Ef7Ad8442C6D1f9E89e07e7761',
 					safeMasterCopyAddress: '0xe591ae490dcc235f420fb7ae3239e0df3ae2048f',
 					safeProxyFactoryAddress: '0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2',
-					multiSendCallOnlyAddress: '0x40A2aCCbd92BCA938b02010E17A5b8929b49130D'
+					multiSendCallOnlyAddress: '0x40A2aCCbd92BCA938b02010E17A5b8929b49130D',
+					createCallAddress: '',
+					fallbackHandlerAddress: '',
+					signMessageLibAddress: '',
 				}
 			}
 
