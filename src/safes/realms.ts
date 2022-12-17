@@ -171,11 +171,9 @@ export class realms implements SafeInterface {
 
 			const safeAddressPublicKey = new PublicKey(this.safeAddress!);
 			const connection = new Connection(this.rpcURL!, 'recent')
-			console.log('realms ss', this.rpcURL!)
 			const programId = new PublicKey('GovER5Lthms3bLBqWub97yVrMmEogzX7xNjdXpPPCVZw')
 			const realmsPublicKey = safeAddressPublicKey
 			const realmData = await getRealm(connection, realmsPublicKey)
-			console.log('realms ss', realmData, this.rpcURL!)
 			const governances = await getGovernanceAccounts(connection, programId, Governance, [
 				pubkeyFilter(1, safeAddressPublicKey)!,
 			])
