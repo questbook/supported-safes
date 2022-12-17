@@ -38,6 +38,7 @@ export class realms implements SafeInterface {
 	}
 
 	async proposeTransactions(grantname: string, transactions: any[], wallet: any): Promise<string|errorMessage> {
+		console.log('transactions', transactions, wallet.publicKey.toString())
 		try{
 			const safeAddressPublicKey = new PublicKey(this.safeAddress!);
 			const realmData = await getRealm(this.connection, safeAddressPublicKey)
