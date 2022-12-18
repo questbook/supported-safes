@@ -6,6 +6,7 @@ import { getCeloTokenUSDRate } from '../utils/tokenConversionUtils';
 import axios from 'axios';
 import { createEVMMetaTransactions } from '../utils/gnosisUtils';
 import { errorMessage, SafeDetailsInterface, SafeInterface, TokenDetailsInterface } from '../types/Safe';
+import { switchNetwork } from '@wagmi/core'
 export class gnosis implements SafeInterface {
 
 	chainId: number;
@@ -27,6 +28,13 @@ export class gnosis implements SafeInterface {
 		await provider.send('eth_requestAccounts', [])
 
 		const signer = provider.getSigner()
+		const currentChain = await signer.getChainId()
+		if (currentChain !== this.chainId) {
+			const network = await switchNetwork({
+				chainId: this.chainId,
+			})
+		}
+
 		const ethAdapter = new EthersAdapter({
 			ethers,
 			signerOrProvider: signer,
