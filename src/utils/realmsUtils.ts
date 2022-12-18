@@ -19,6 +19,7 @@ export const solTokenTrxn = async(
         const safeAddressPublicKey = new PublicKey(safeAddress!);
         for(let i = 0; i < transactions.length; i++) {
             const solanaAmount = await usdToSolana(transactions[i].amount)
+            console.log('solanaAmount', solanaAmount)
             const obj = {
                 fromPubkey: nativeTreasury,
                 toPubkey: new PublicKey(transactions[i].to),
@@ -64,8 +65,6 @@ export const solTokenTrxn = async(
                 }
             }
         }
-
-        console.log('create New proposal - getProvider', getProvider())
 
         const block = await connection.getLatestBlockhash('confirmed')
         const transaction = new Transaction()
