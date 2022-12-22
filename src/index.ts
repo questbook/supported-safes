@@ -15,9 +15,9 @@ export class SupportedSafes {
         for (let i = 0; i < CHAIN_IDS.length; i++) {
             const chainId = parseInt(CHAIN_IDS[i]);
             const safeInfo = SupportedSafesInfo[chainId];
-            if(address){
-                const safe = new safeInfo.class(address);
+            if(address){        
                 try{
+                    const safe = new safeInfo.class(address);
                     const res = await safe.getSafeDetails();
                     if (res) {
                         safeData.push({...res, networkName: safe.chainName, networkIcon: safe.chainLogo});
