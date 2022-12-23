@@ -22,10 +22,12 @@
     "@solana/spl-token": "^0.1.8",
     "@solana/spl-token-registry": "^0.2.4574",
     "@solana/web3.js": "1.66.2",
+    "@types/ledgerhq__hw-transport": "^4.21.4",
     "axios": "^0.27.2",
     "ethers": "^5.7.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "tonweb": "^0.0.58",
     "wagmi": "^0.6.5"
   },
   "devDependencies": {
