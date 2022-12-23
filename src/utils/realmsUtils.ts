@@ -7,6 +7,7 @@ export const solTokenTrxn = async(
     connection: Connection,
     programId: any,
     safeAddress: string,
+    programVersion: any,
     transactions: any, 
     nativeTreasury: any, 
     proposalInstructions: any, 
@@ -14,6 +15,8 @@ export const solTokenTrxn = async(
     proposalAddress: any,
     tokenOwnerRecord:any ,
     payer: any): Promise<any> => {
+
+    console.log("realms creating sol token trxn")
 
     try{
         const safeAddressPublicKey = new PublicKey(safeAddress!);
@@ -26,12 +29,14 @@ export const solTokenTrxn = async(
                 lamports: Math.floor(solanaAmount * 10**9),
                 programId: programId,
             }
+            console.log("realms obj", obj.fromPubkey.toString(), obj.toPubkey.toString(), obj.lamports)
+            console.log("realms payer", payer.toString())
             const ins = SystemProgram.transfer(obj)
             const instructionData = createInstructionData(ins)
             await withInsertTransaction(
                 proposalInstructions,
                 programId,
-                2,
+                programVersion,
                 governance.pubkey,
                 proposalAddress,
                 tokenOwnerRecord[0].pubkey,
@@ -47,7 +52,7 @@ export const solTokenTrxn = async(
         withSignOffProposal(
             proposalInstructions,
             programId,
-            2,
+            programVersion,
             safeAddressPublicKey,
             governance.pubkey,
             proposalAddress,
@@ -71,6 +76,7 @@ export const solTokenTrxn = async(
         transaction.recentBlockhash = block.blockhash
         transaction.feePayer = payer!
         transaction.add(...proposalInstructions)
+        console.log("realms transaction", transaction)
         await getProvider().signAndSendTransaction(transaction)
     } catch(e) {
         console.log('error', e)
@@ -81,6 +87,7 @@ export const splTokenTrxn = async(
     connection: Connection,
     programId: PublicKey,
     safeAddress: string,
+    programVersion: any,
     wallet: any,
     transactions: any, 
     nativeTreasury: any, 
@@ -146,7 +153,7 @@ export const splTokenTrxn = async(
             await withInsertTransaction(
                 proposalInstructions,
                 programId,
-                2,
+                programVersion,
                 governance.pubkey,
                 proposalAddress,
                 tokenOwnerRecord[0].pubkey,
@@ -162,7 +169,7 @@ export const splTokenTrxn = async(
         withSignOffProposal(
             proposalInstructions,
             programId,
-            2,
+            programVersion,
             safeAddressPublicKey,
             governance.pubkey,
             proposalAddress,

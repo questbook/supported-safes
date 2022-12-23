@@ -1,6 +1,7 @@
 import {
 	getAllTokenOwnerRecords,
 	getGovernanceAccounts,
+	getGovernanceProgramVersion,
 	getNativeTreasuryAddress,
 	getRealm,
 	Governance,
@@ -42,12 +43,28 @@ export class realms implements SafeInterface {
 		try{
 			const safeAddressPublicKey = new PublicKey(this.safeAddress!);
 			const realmData = await getRealm(this.connection, safeAddressPublicKey)
-			const governances = await getGovernanceAccounts(this.connection, this.programId, Governance, [
-				pubkeyFilter(1, safeAddressPublicKey)!,
+			const governances = await getGovernanceAccounts(
+                this.connection, 
+                this.programId, 
+                Governance, 
+                [pubkeyFilter(1, safeAddressPublicKey)!,
 			])
+            
+
+			console.log("realms governances", governances.map((g)=>g.pubkey.toString()))
 
 			const governance = governances.filter((gov)=>gov.pubkey.toString()===realmData.account.authority?.toString())[0]
 			const payer : PublicKey = wallet.publicKey
+
+			console.log("realms governance", governance.pubkey.toString())
+
+			const tokenOwnerRecordTrial = await getAllTokenOwnerRecords(
+				this.connection,
+				realmData.owner,
+				realmData.pubkey
+			)
+
+			console.log("realms tokenOwnerRecordTrial", tokenOwnerRecordTrial.map((t)=>t.pubkey.toString()))
 
 			const tokenOwnerRecord  = await getGovernanceAccounts(
 				this.connection,
@@ -55,13 +72,18 @@ export class realms implements SafeInterface {
 				TokenOwnerRecord,
 				[pubkeyFilter(1, realmData.pubkey)!, pubkeyFilter(65, payer)!]
 			);
+
+			console.log("realms tokenOwnerRecord", tokenOwnerRecord[0].pubkey.toString())
+			console.log("realms tokenOwnerRecord governingTokenMint", tokenOwnerRecord[0].account.governingTokenMint.toString())
+
+			const programVersion = await getGovernanceProgramVersion(this.connection, this.programId)
 			
 			const proposalInstructions: TransactionInstruction[] = []
 
 			const proposalAddress = await withCreateProposal(
 				proposalInstructions,
 				this.programId,
-				2,
+				programVersion,
 				safeAddressPublicKey,
 				governance.pubkey,
 				tokenOwnerRecord[0].pubkey,
@@ -69,7 +91,7 @@ export class realms implements SafeInterface {
 				`${grantname}`,
 				tokenOwnerRecord[0].account.governingTokenMint,
 				payer!,
-				governance.account.proposalCount,
+				0,
 				VoteType.SINGLE_CHOICE,
 				['Approve'],
 				true,
@@ -83,6 +105,7 @@ export class realms implements SafeInterface {
 					this.connection,
 					this.programId,
 					this.safeAddress,
+					programVersion,
 					transactions, 
 					nativeTreasury, 
 					proposalInstructions, 
@@ -95,6 +118,7 @@ export class realms implements SafeInterface {
 					this.connection,
 					this.programId,
 					this.safeAddress,
+					programVersion,
 					wallet,
 					transactions, 
 					nativeTreasury, 
