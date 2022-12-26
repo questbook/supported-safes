@@ -9,27 +9,25 @@ export class SupportedPayouts {
         }
     }
     
-    async getSafeByAddress(address: string) {
-        let safeData = [];
+    async getSafeByAddress(address: string, callback: (value: any)=>void) {
         const CHAIN_IDS = Object.keys(SupportedSafesInfo);
 
-        for (let i = 0; i < CHAIN_IDS.length; i++) {
-            const chainId = parseInt(CHAIN_IDS[i]);
+        Promise.all(CHAIN_IDS.map(async (chainId) => {
             const safeInfo = SupportedSafesInfo[chainId];
             if(address){        
                 try{
                     const safe = new safeInfo.class(address);
                     const res = await safe.getSafeDetails();
                     if (res) {
-                        safeData.push({...res, networkName: safe.chainName, networkIcon: safe.chainLogo});
+                        callback([{...res, networkName: safe.chainName, networkIcon: safe.chainLogo}])
                     }
                 }catch(e){
                     console.log(e)
                 }
             }
-        }
-
-        return safeData;
+        })).then((values)=>{
+            // callback(values.filter(Boolean))
+        })
     }
 
     getAllWallets() {
