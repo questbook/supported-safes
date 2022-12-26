@@ -4,9 +4,10 @@
       "module": "commonjs",
       "declaration": true,
       "outDir": "./lib",
-      "strict": true,
+      "strict": false,
       "moduleResolution": "node",
       "allowSyntheticDefaultImports": true,
+      "esModuleInterop": true
     },
     "include": ["src", "src/*.ts"],
     "exclude": ["node_modules", "src/tests/*.ts"]

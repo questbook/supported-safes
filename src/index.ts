@@ -1,5 +1,6 @@
 import SupportedSafesInfo from "./constants/supported-safe";
-export class SupportedSafes {
+import SupportedWalletsInfo from "./constants/supported-wallets";
+export class SupportedPayouts {
 
     getSafe(chainId: number, safeAddress: string) {
         const safeInfo = SupportedSafesInfo[chainId];
@@ -29,5 +30,19 @@ export class SupportedSafes {
         }
 
         return safeData;
+    }
+
+    getAllWallets() {
+        return Object.keys(SupportedWalletsInfo).map((wallet) => {
+            const walletInfo = SupportedWalletsInfo[wallet];
+            return new walletInfo.class();
+        });
+    }
+
+    getWallet(walletName: string) {
+        const walletInfo = SupportedWalletsInfo[walletName];
+        if (walletInfo) {
+            return new walletInfo.class();
+        }
     }
 }
