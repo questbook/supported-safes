@@ -83,7 +83,7 @@ export class TonWallet {
 							}
 							console.log({transactionHash})
 							clearInterval(interval);
-							callback(result)
+							callback({transactionHash})
 						}
 					}, 1000)
 				}else{
