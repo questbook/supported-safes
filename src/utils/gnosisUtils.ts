@@ -3,19 +3,20 @@ import { erc20ABI } from "wagmi"
 import { getCeloTokenUSDRate } from "./tokenConversionUtils"
 
 
-export const encodeTransactionData = (recipientAddress: string, fundAmount: string, rewardAssetDecimals: number) =>  {
+export const encodeTransactionData = (recipientAddress: string, fundAmount: string, rewardAssetDecimals: number, applicationId: number) =>  {
 	console.log('params for encodeTransactionData' ,fundAmount, rewardAssetDecimals)
     const ERC20Interface = new ethers.utils.Interface(erc20ABI)
-    const txData = ERC20Interface.encodeFunctionData('transfer', [
+   let txData = ERC20Interface.encodeFunctionData('transfer', [
         recipientAddress,
         ethers.utils.parseUnits(fundAmount, rewardAssetDecimals)
     ])
+
+	txData = txData + ethers.utils.hexZeroPad(ethers.utils.hexlify(applicationId), 32).slice(2) + ethers.utils.hexZeroPad(ethers.utils.hexlify('0x5175657374626f6f6b'), 32)
 
     return txData
 }
 
 export const createEVMMetaTransactions = async (workspaceSafeChainId: string , gnosisBatchData: any): Promise<any[]> => {
-
 		const celoTokensUSDRateMapping = await (await getCeloTokenUSDRate()).data;
 		const readyTxs = gnosisBatchData.map((data: any) => {
 			let tokenUSDRate: number = 0
@@ -40,7 +41,7 @@ export const createEVMMetaTransactions = async (workspaceSafeChainId: string , g
 			const rewardAssetAddress = data.selectedToken.info.tokenAddress
 			const usdToToken = (data.amount / tokenUSDRate).toFixed(rewardAssetDecimals)
 
-			const txData = encodeTransactionData(data.to, (usdToToken.toString()), rewardAssetDecimals)
+			const txData = encodeTransactionData(data.to, (usdToToken.toString()), rewardAssetDecimals, data.applicationId)
 			const tx = {
 				to: ethers.utils.getAddress(rewardAssetAddress),
 				data: txData,

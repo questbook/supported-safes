@@ -35,7 +35,7 @@ export interface TransactionDataInterface {
     from: string
     to: string
     amount: number
-    applicationId: string
+    applicationId: number
     selectedMilestone: MilestoneInterface
     selectedToken: SelectedTokenInterface
 }

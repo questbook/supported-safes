@@ -15,7 +15,7 @@ import { SolanaDevnet } from "../chains/solana-devnet"
 import { SolanaMainnet } from "../chains/solana-mainnet"
 import { TelosMainnet } from "../chains/telos-mainnet"
 
-const SupportedSafesInfo: {[chainId: number]: any} = {
+const SupportedSafesInfo: {[chainId: number]: {name: string, chainId: number, rpcURL: string, class: any}} = {
     1: {
         name: "Ethereum Mainnet",
         chainId: 1,
@@ -49,7 +49,6 @@ const SupportedSafesInfo: {[chainId: number]: any} = {
     56: {
         name: "Binance Mainnet",
         chainId: 56,
-        className: "BinanceMainnet",
         rpcURL: "https://safe-transaction.bsc.gnosis.io/",
         class: BinanceMainnet,
     },
