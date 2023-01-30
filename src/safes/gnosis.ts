@@ -24,7 +24,7 @@ export class gnosis implements SafeInterface {
 	async proposeTransactions(grantName: string, initiateTransactionData: any, wallet: any): Promise<string| errorMessage>  {
 
 		const readyToExecuteTxs = await createEVMMetaTransactions(this.chainId.toString(), initiateTransactionData)
-		console.log('creating gnosis transaction for', readyToExecuteTxs)
+		console.log('creating gnosis transaction for (edited)', readyToExecuteTxs)
 		//@ts-ignore
 		const provider = new ethers.providers.Web3Provider(window.ethereum)
 		await provider.send('eth_requestAccounts', [])
@@ -43,7 +43,7 @@ export class gnosis implements SafeInterface {
 		})
 		const safeService = new SafeServiceClient({ txServiceUrl: this.rpcURL, ethAdapter })
 		// const safeFactory = await SafeFactory.create({ ethAdapter })
-		let safeSdk
+		let safeSdk: Safe
 
 		if (this.chainId === 40) {
 			const id = await ethAdapter.getChainId()
@@ -67,10 +67,13 @@ export class gnosis implements SafeInterface {
 		}
 
 		try {
-			const safeTransaction = await safeSdk.createTransaction({safeTransactionData: readyToExecuteTxs})
-
+			console.log(1)
+			const safeTransaction = await safeSdk.createTransaction({ safeTransactionData: readyToExecuteTxs })
+			console.log(safeTransaction, 'Safe transaction')
 			const safeTxHash = await safeSdk.getTransactionHash(safeTransaction)
+			console.log(safeTxHash, 'Safe txn hash')
 			const senderSignature = await safeSdk.signTransactionHash(safeTxHash)
+			console.log(senderSignature, 'Sender signature')
 			// console.log(await signer.getAddress())
 
 			// console.log('safe address', safeAddress, safeTransaction.data, safeTxHash, senderSignature.data)

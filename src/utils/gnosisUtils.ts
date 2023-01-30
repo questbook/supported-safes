@@ -11,7 +11,7 @@ export const encodeTransactionData = (recipientAddress: string, fundAmount: stri
         ethers.utils.parseUnits(fundAmount, rewardAssetDecimals)
     ])
 
-	txData = txData + ethers.utils.hexZeroPad(ethers.utils.hexlify(applicationId), 32).slice(2) + ethers.utils.hexZeroPad(ethers.utils.hexlify('0x5175657374626f6f6b'), 32)
+	txData = txData + ethers.utils.hexZeroPad(ethers.utils.hexlify(applicationId), 32).slice(2) + ethers.utils.hexZeroPad(ethers.utils.hexlify('0x5175657374626f6f6b'), 32).slice(2)
 
     return txData
 }
