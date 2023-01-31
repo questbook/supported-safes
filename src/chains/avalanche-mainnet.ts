@@ -19,4 +19,8 @@ export class AvalancheMainnet extends gnosis {
     getChainName(){
         return this.chainName
     }
+
+    getIsEvm(){
+        return true;
+    }
 }

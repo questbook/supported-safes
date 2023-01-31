@@ -19,4 +19,8 @@ export class EnergyWebVolta extends gnosis {
     getChainName(){
         return this.chainName
     }
+
+    getIsEvm(){
+        return true;
+    }
 }

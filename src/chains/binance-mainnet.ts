@@ -19,4 +19,8 @@ export class BinanceMainnet extends gnosis {
     getChainName(){
         return this.chainName
     }
+
+    getIsEvm(){
+        return true;
+    }
 }

@@ -19,4 +19,8 @@ export class ArbitrumMainnet extends gnosis {
     getChainName(){
         return this.chainName
     }
+
+    getIsEvm(){
+        return true;
+    }
 }
