@@ -12,22 +12,22 @@ export class SupportedPayouts {
     async getSafeByAddress(address: string, callback: (value: any)=>void) {
         const CHAIN_IDS = Object.keys(SupportedSafesInfo);
 
-        Promise.all(CHAIN_IDS.map(async (chainId) => {
+        const safes = await Promise.all(CHAIN_IDS.map(async (chainId) => {
             const safeInfo = SupportedSafesInfo[chainId];
             if(address){        
                 try{
                     const safe = new safeInfo.class(address);
                     const res = await safe.getSafeDetails();
                     if (res) {
-                        callback([{...res, networkName: safe.chainName, networkIcon: safe.chainLogo}])
+                        return {...res, networkName: safe.chainName, networkIcon: safe.chainLogo}
                     }
-                }catch(e){
+                } catch(e){
                     console.log(e)
                 }
             }
-        })).then((values)=>{
-            // callback(values.filter(Boolean))
-        })
+        }));
+
+        callback(safes.filter((safe) => safe !== undefined));
     }
 
     getAllWallets() {
