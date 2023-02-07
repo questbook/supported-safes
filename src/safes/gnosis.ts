@@ -1,5 +1,6 @@
 import { ethers, logger } from 'ethers'
 import Safe, { ContractNetworksConfig } from '@safe-global/safe-core-sdk'
+import { SafeTransaction } from '@safe-global/safe-core-sdk-types';
 import EthersAdapter from '@safe-global/safe-ethers-lib'
 import SafeServiceClient from '@safe-global/safe-service-client'
 import { getCeloTokenUSDRate } from '../utils/tokenConversionUtils';
@@ -67,13 +68,27 @@ export class gnosis implements SafeInterface {
 		}
 
 		try {
-			console.log(1)
-			const safeTransaction = await safeSdk.createTransaction({ safeTransactionData: readyToExecuteTxs })
-			console.log(safeTransaction, 'Safe transaction')
+			let safeTransaction: SafeTransaction
+			if (this.chainId !== 42220) {
+				let nextNonce = await safeSdk.getNonce()
+				const initialNonce = nextNonce
+
+				do {
+					const nonceURL = `${this.rpcURL}/api/v1/safes/${this.safeAddress}/multisig-transactions/?nonce=${nextNonce}&ordering=submissionDate`
+					const nonceResponse = await axios.get(nonceURL)
+					console.log(nonceResponse, 'Nonce response')
+					if (nonceResponse.data?.count === 0) break
+					++nextNonce;
+
+					if (nextNonce - initialNonce > 10) throw new Error('Too many pending transactions')
+				} while (true)
+
+				safeTransaction = await safeSdk.createTransaction({ safeTransactionData: readyToExecuteTxs, options: { nonce: nextNonce }})
+			} else {
+				safeTransaction = await safeSdk.createTransaction({ safeTransactionData: readyToExecuteTxs })
+			}
 			const safeTxHash = await safeSdk.getTransactionHash(safeTransaction)
-			console.log(safeTxHash, 'Safe txn hash')
 			const senderSignature = await safeSdk.signTransactionHash(safeTxHash)
-			console.log(senderSignature, 'Sender signature')
 			// console.log(await signer.getAddress())
 
 			// console.log('safe address', safeAddress, safeTransaction.data, safeTxHash, senderSignature.data)
@@ -83,7 +98,7 @@ export class gnosis implements SafeInterface {
 				safeTransactionData: safeTransaction.data,
 				safeTxHash,
 				senderAddress: senderSignature.signer,
-				senderSignature: senderSignature.data
+				senderSignature: senderSignature.data,
 			})
 
 			return safeTxHash

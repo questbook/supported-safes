@@ -19,7 +19,7 @@ export const encodeTransactionData = (recipientAddress: string, fundAmount: stri
 export const createEVMMetaTransactions = async (workspaceSafeChainId: string , gnosisBatchData: any): Promise<any[]> => {
 		const celoTokensUSDRateMapping = await (await getCeloTokenUSDRate()).data;
 		const readyTxs = gnosisBatchData.map((data: any) => {
-			let tokenUSDRate: number = 0
+			let tokenUSDRate: number = 1
 			if(workspaceSafeChainId === '42220') {
 				const tokenSelected = data.selectedToken?.tokenName?.toLowerCase()
 				if(tokenSelected === 'cusd') {
@@ -34,7 +34,7 @@ export const createEVMMetaTransactions = async (workspaceSafeChainId: string , g
 					tokenUSDRate = 0
 				}
 			} else {
-				tokenUSDRate = data.selectedToken.info.fiatConversion
+				tokenUSDRate = data.selectedToken.info.fiatConversion > 0 ? data.selectedToken.info.fiatConversion : 1
 			}
 
 			const rewardAssetDecimals = data.selectedToken.info.decimals
