@@ -7,9 +7,8 @@ import { getCeloTokenUSDRate } from '../utils/tokenConversionUtils';
 import axios from 'axios';
 import { createEVMMetaTransactions } from '../utils/gnosisUtils';
 import { errorMessage, SafeDetailsInterface, SafeInterface, TokenDetailsInterface } from '../types/Safe';
-import { allChains, InjectedConnector, switchNetwork } from '@wagmi/core'
-import { createClient, configureChains } from 'wagmi'
-import { publicProvider } from 'wagmi/providers/public'
+import { switchNetwork } from '@wagmi/core'
+
 export class gnosis implements SafeInterface {
 
 	chainId: number;
@@ -22,9 +21,8 @@ export class gnosis implements SafeInterface {
 		this.safeAddress = ethers.utils.getAddress(safeAddress)
 	}
 
-	async proposeTransactions(grantName: string, initiateTransactionData: any, wallet: any): Promise<string| errorMessage>  {
-
-		const readyToExecuteTxs = await createEVMMetaTransactions(this.chainId.toString(), initiateTransactionData)
+	async proposeTransactions(workspaceId: string, initiateTransactionData: any, wallet: any): Promise<string| errorMessage>  {
+		const readyToExecuteTxs = await createEVMMetaTransactions(workspaceId, this.chainId.toString(), initiateTransactionData)
 		console.log('creating gnosis transaction for (edited)', readyToExecuteTxs)
 		//@ts-ignore
 		const provider = new ethers.providers.Web3Provider(window.ethereum)
