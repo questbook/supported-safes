@@ -21,8 +21,12 @@ export class gnosis implements SafeInterface {
 		this.safeAddress = ethers.utils.getAddress(safeAddress)
 	}
 
-	async proposeTransactions(workspaceId: string, initiateTransactionData: any, wallet: any): Promise<string| errorMessage>  {
-		const readyToExecuteTxs = await createEVMMetaTransactions(workspaceId, this.chainId.toString(), initiateTransactionData)
+	async proposeTransactions(extraData: string, initiateTransactionData: any, wallet: any): Promise<string| errorMessage>  {
+		const { workspaceId, grantAddress } = JSON.parse(extraData)
+		if (!workspaceId || !grantAddress) {
+			return {error: 'Invalid workspaceId or grantAddress'}
+		}
+		const readyToExecuteTxs = await createEVMMetaTransactions(workspaceId, grantAddress, this.chainId.toString(), initiateTransactionData)
 		console.log('creating gnosis transaction for (edited)', readyToExecuteTxs)
 		//@ts-ignore
 		const provider = new ethers.providers.Web3Provider(window.ethereum)
