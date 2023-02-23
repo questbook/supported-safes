@@ -84,6 +84,6 @@ export interface SafeInterface {
     isOwner(safeAddress: string): Promise<boolean>;
     getOwners (): Promise<string[] | errorMessage>;
     getSafeDetails(): Promise<SafeDetailsInterface>;
-    getTokenAndbalance(): Promise<TokenDetailsInterface[] | errorMessage>;
+    getTokenAndbalance(): Promise<{value?: TokenDetailsInterface[], error?: string}>;
     getNextSteps(): string[];
 }

@@ -34,6 +34,7 @@ export class realms implements SafeInterface {
 		this.rpcURL = rpcURL;
 		this.safeAddress = safeAddress;
 		this.connection = new Connection(rpcURL);
+		console.log('this.connection', this.connection)
 		this.programId = new PublicKey('GovER5Lthms3bLBqWub97yVrMmEogzX7xNjdXpPPCVZw');
 		this.allProposals = [];
 	}
@@ -170,9 +171,13 @@ export class realms implements SafeInterface {
 	}
 
 	getSafeDetails = async(): Promise<SafeDetailsInterface> => {
-		const tokenListAndBalance = await this.getTokenAndbalance() as TokenDetailsInterface[];
+		const tokenListAndBalance = await this.getTokenAndbalance();
+		if (tokenListAndBalance?.error) {
+			console.log(tokenListAndBalance?.error, 'getSafeDetails error')
+			return undefined
+		}
 		let usdAmount = 0;
-		tokenListAndBalance?.map((obj:any)=>{
+		tokenListAndBalance?.value?.map((obj:any)=>{
 			usdAmount += obj.usdValueAmount
 		})
 		const owners = await this.getOwners();
@@ -188,13 +193,14 @@ export class realms implements SafeInterface {
 		}
 	}
 
-	async getTokenAndbalance (): Promise<TokenDetailsInterface[] | errorMessage>{
+	async getTokenAndbalance (): Promise<{value?: TokenDetailsInterface[], error?: string}>{
 
 		try{
 			let tokenList:any[] = [];
 
 			const safeAddressPublicKey = new PublicKey(this.safeAddress!);
 			const connection = new Connection(this.rpcURL!, 'recent')
+			console.log(connection)
 			const programId = new PublicKey('GovER5Lthms3bLBqWub97yVrMmEogzX7xNjdXpPPCVZw')
 			const realmsPublicKey = safeAddressPublicKey
 			const realmData = await getRealm(connection, realmsPublicKey)
@@ -254,10 +260,10 @@ export class realms implements SafeInterface {
 				}))
 			
 
-			return tokenList;
+			return {value: tokenList};
 		}catch(e:any){
 			console.log('error', e)
-			return ({'error': e.message})
+			return ({error: e.message})
 		}
 	}
 

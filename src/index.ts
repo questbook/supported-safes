@@ -14,10 +14,12 @@ export class SupportedPayouts {
 
         const safes = await Promise.all(CHAIN_IDS.map(async (chainId) => {
             const safeInfo = SupportedSafesInfo[chainId];
+            console.log(safeInfo, chainId)
             if(address){        
                 try{
                     const safe = new safeInfo.class(address);
                     const res = await safe.getSafeDetails();
+                    console.log(chainId, res)
                     if (res) {
                         return {...res, networkName: safe.chainName, networkIcon: safe.chainLogo}
                     }

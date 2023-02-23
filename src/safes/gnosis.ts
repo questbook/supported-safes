@@ -168,8 +168,12 @@ export class gnosis implements SafeInterface {
 
 	async getSafeDetails(): Promise<SafeDetailsInterface> {
 		const tokenListAndBalance = await this.getTokenAndbalance();
+		if (tokenListAndBalance?.error) {
+			console.log('Error', tokenListAndBalance.error)
+			return undefined
+		}
 		let usdAmount = 0;
-		tokenListAndBalance.map((obj:any)=>{
+		tokenListAndBalance?.value?.map((obj:any)=>{
 			usdAmount += obj.usdValueAmount
 		})
 		const owners = await this.getOwners();
@@ -185,7 +189,7 @@ export class gnosis implements SafeInterface {
 		}
 	}
 
-	async getTokenAndbalance(): Promise<TokenDetailsInterface[]> {
+	async getTokenAndbalance(): Promise<{value?: TokenDetailsInterface[], error?: string}> {
 		const tokenList: any[] = []
 		const gnosisUrl = `${this.rpcURL}/api/v1/safes/${this.safeAddress}/balances/usd`
 		const response = await axios.get(gnosisUrl)
@@ -226,7 +230,7 @@ export class gnosis implements SafeInterface {
 			})
 		);
 		console.log('tokenList', tokenList)
-		return tokenList;
+		return {value: tokenList};
 	}
 
 	getNextSteps(): string[] {
