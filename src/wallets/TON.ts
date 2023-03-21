@@ -2,19 +2,16 @@ import TonWeb from 'tonweb'
 import { sleep } from '../utils/general'
 
 export class TonWallet {
-
     name: string = 'TON Wallet'
-    logo: string = '/wallet_icons/ton.svg'
+    logo: string = '/wallet_icons/ton.png'
     token: string = 'TON'
 	provider: any
 	tonReady: boolean = false
 	address: string = ''
-    tonWeb: TonWeb
 
-	constructor() {
+	constructor(isTestnet: boolean = false) {
 		this.provider = null
 		this.tonReady = false
-        this.tonWeb = new TonWeb()
 	}
 
 	checkTonReady = async(window: any) => {
@@ -38,12 +35,14 @@ export class TonWallet {
 		this.address = account
 	}
 
-	sendMoney = async(toAddress: string, amount: number, callback: any) => {
+	sendMoney = async(toAddress: string, amount: number, isTestnet: boolean = false, callback: any) => {
 		try {
 			await this.connect()
 			await sleep(1000)
 			if(this.tonReady) {
-                const wallet = this.tonWeb.wallet.create({ address: this.address })
+				const tonWeb = new TonWeb(isTestnet ? new TonWeb.HttpProvider('https://testnet.toncenter.com/api/v2/jsonRPC') : new TonWeb.HttpProvider('https://toncenter.com/api/v2/jsonRPC'))
+                const wallet = tonWeb.wallet.create({ address: this.address })
+				console.log(wallet.methods.seqno)
 				const prevSeqno = await wallet.methods.seqno().call()
 				console.log('TON seqno', prevSeqno)
 				await sleep(1000)
@@ -63,16 +62,16 @@ export class TonWallet {
 					let startTime = new Date().getTime();
 					let interval = setInterval(async() => {
 						console.log('TON interval called');
-						if(new Date().getTime() - startTime > 30000){
-							clearInterval(interval);
-							callback({error: 'Transaction timeout'})
-						}
+						// if(new Date().getTime() - startTime > 30000){
+						// 	clearInterval(interval);
+						// 	callback({error: 'Transaction timeout'})
+						// }
 	
 						const seqno = await wallet.methods.seqno().call()
 						console.log('TON seqno', seqno)
 						if(seqno > prevSeqno) {
 							await sleep(1000)
-							const transactions = await this.tonWeb.getTransactions(this.address, 5, undefined, undefined, undefined)
+							const transactions = await tonWeb.getTransactions(this.address, 5, undefined, undefined, undefined)
 							console.log('TON transactions after transaction', transactions)
 							let transactionHash = ''
 							for(let i = 0; i < transactions.length; i++){
@@ -85,7 +84,7 @@ export class TonWallet {
 							clearInterval(interval);
 							callback({transactionHash})
 						}
-					}, 1000)
+					}, 2000)
 				}else{
 					callback({error: 'Transaction failed'})
 				}

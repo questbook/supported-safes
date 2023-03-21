@@ -56,6 +56,8 @@ export interface PhantomProvider {
 }
 
 export interface SafeDetailsInterface {
+    networkName?: string;
+    networkIcon?: string;
     safeAddress: string;
     networkType: number;
     networkId: number;
@@ -67,13 +69,18 @@ export interface SafeDetailsInterface {
 }
 
 export interface TokenDetailsInterface {
-    tokenIcon: string;
-    tokenName: string;
-    symbol: string;
-    tokenValueAmount: number;
-    usdValueAmount: number;
-    mintAddress: string;
-    info: any;
+    tokenIcon: string
+    tokenName: string
+    symbol: string
+    tokenValueAmount: number
+    usdValueAmount: number
+    mintAddress: string
+    info: {
+        decimals: number
+        tokenAddress: string
+        fiatConversion: number
+    }
+    fiatConversion: number
 }
 
 export interface SafeInterface {

@@ -15,7 +15,7 @@ import { SolanaDevnet } from "../chains/solana-devnet"
 import { SolanaMainnet } from "../chains/solana-mainnet"
 import { TelosMainnet } from "../chains/telos-mainnet"
 
-const SupportedSafesInfo: {[chainId: number]: {name: string, chainId: number, rpcURL: string, class: any}} = {
+const SupportedSafesInfo: {[chainId: number]: {name: string, chainId: number, rpcURL: string, class: typeof EthereumMainnet | typeof SolanaMainnet}} = {
     1: {
         name: "Ethereum Mainnet",
         chainId: 1,

@@ -1,6 +1,6 @@
 import { TonWallet } from "../wallets/TON";
 
-const SupportedWalletsInfo: {[wallet: string]: any} = {
+const SupportedWalletsInfo: {[wallet: string]: {class: typeof TonWallet, name: string, logo: string}} = {
     'TON Wallet': {
         class: TonWallet,
         name: 'TON',
