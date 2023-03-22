@@ -8,6 +8,8 @@ import { EnergyWebVolta } from "../chains/energy-web-volta"
 import { EthereumMainnet } from "../chains/ethereum-mainnet"
 import { GnosisMainnet } from "../chains/gnosis-mainnet"
 import { GoerliTestnet } from "../chains/goerli-testnet"
+import { IoTexMainnet } from "../chains/iotex-mainnet"
+import { IoTexTestnet } from "../chains/iotex-testnet"
 import { OptimismMainnet } from "../chains/optimism-mainnet"
 import { PolygonMainnet } from "../chains/polygon-mainnet"
 import { RinkebyTestnet } from "../chains/rinkeby-testnet"
@@ -112,6 +114,18 @@ const SupportedSafesInfo: {[chainId: number]: {name: string, chainId: number, rp
         rpcURL: "https://mango.devnet.rpcpool.com",
         class: SolanaDevnet,
     },
+    4689: {
+        name: 'IoTex Mainnet',
+        chainId: 4689,
+        rpcURL: 'https://transaction.safe.iotex.io',
+        class: IoTexMainnet,
+    },
+    4690: {
+        name: 'IoTex Testnet',
+        chainId: 4690,
+        rpcURL: 'https://transaction-testnet.safe.iotex.io',
+        class: IoTexTestnet,
+    }
 }
 
 export default SupportedSafesInfo
