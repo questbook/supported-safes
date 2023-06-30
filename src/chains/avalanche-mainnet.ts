@@ -6,7 +6,7 @@ export class AvalancheMainnet extends gnosis {
     safeLogo: string;
 
     constructor(safeAddress: string) {
-        super(43114, 'https://safe-transaction.avalanche.gnosis.io/', safeAddress);
+        super(43114, 'https://safe-transaction-avalanche.safe.global/', safeAddress);
         this.chainName = 'Avalanche Mainnet'
         this.chainLogo = 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/avalanche/info/logo.png'
         this.safeLogo = '/safes_icons/safe.svg'

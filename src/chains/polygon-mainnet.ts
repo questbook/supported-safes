@@ -6,7 +6,7 @@ export class PolygonMainnet extends gnosis {
     safeLogo: string;
 
     constructor(safeAddress: string) {
-        super(137, 'https://safe-transaction.polygon.gnosis.io/', safeAddress)
+        super(137, 'https://safe-transaction-polygon.safe.global', safeAddress)
         this.chainName = 'Polygon Mainnet'
         this.chainLogo = 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/polygon/info/logo.png'
         this.safeLogo = '/safes_icons/safe.svg'

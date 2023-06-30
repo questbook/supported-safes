@@ -6,7 +6,7 @@ export class OptimismMainnet extends gnosis {
     safeLogo: string;
 
     constructor(safeAddress: string) {
-        super(10, 'https://safe-transaction.optimism.gnosis.io/', safeAddress)
+        super(10, 'https://safe-transaction-optimism.safe.global/', safeAddress)
         this.chainName = 'Optimism Mainnet'
         this.chainLogo = 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/optimism/info/logo.png'
         this.safeLogo = '/safes_icons/safe.svg'

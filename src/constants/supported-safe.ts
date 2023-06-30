@@ -21,7 +21,7 @@ const SupportedSafesInfo: {[chainId: number]: {name: string, chainId: number, rp
     1: {
         name: "Ethereum Mainnet",
         chainId: 1,
-        rpcURL: "https://safe-transaction.mainnet.gnosis.io/",
+        rpcURL: "https://safe-transaction-mainnet.safe.global/",
         class: EthereumMainnet,
     },
     4: {
@@ -33,13 +33,13 @@ const SupportedSafesInfo: {[chainId: number]: {name: string, chainId: number, rp
     5: {
         name: "Goerli Testnet",
         chainId: 5,
-        rpcURL: "https://safe-transaction.goerli.gnosis.io/",
+        rpcURL: "https://safe-transaction-goerli.safe.global/",
         class: GoerliTestnet,
     },
     10: {
         name: "Optimism Mainnet",
         chainId: 10,
-        rpcURL: "https://safe-transaction.optimism.gnosis.io/",
+        rpcURL: "https://safe-transaction-optimism.safe.global/",
         class: OptimismMainnet,
     },
     40: {
@@ -51,13 +51,13 @@ const SupportedSafesInfo: {[chainId: number]: {name: string, chainId: number, rp
     56: {
         name: "Binance Mainnet",
         chainId: 56,
-        rpcURL: "https://safe-transaction.bsc.gnosis.io/",
+        rpcURL: "https://safe-transaction-bsc.safe.global/",
         class: BinanceMainnet,
     },
     137: {
         name: "Polygon Mainnet",
         chainId: 137,
-        rpcURL: "https://safe-transaction.polygon.gnosis.io/",
+        rpcURL: "https://safe-transaction-polygon.safe.global/",
         class: PolygonMainnet,
     },
     246: {
@@ -75,13 +75,13 @@ const SupportedSafesInfo: {[chainId: number]: {name: string, chainId: number, rp
     42161: {
         name: "Arbitrum Mainnet",
         chainId: 42161,
-        rpcURL: "https://safe-transaction.arbitrum.gnosis.io/",
+        rpcURL: "https://safe-transaction-arbitrum.safe.global/",
         class: ArbitrumMainnet,
     },
     43114: {
         name: "Avalanche Mainnet",
         chainId: 43114,
-        rpcURL: "https://safe-transaction.avalanche.gnosis.io/",
+        rpcURL: "https://safe-transaction-avalanche.safe.global/",
         class: AvalancheMainnet,
     },
     42220: {
@@ -93,13 +93,13 @@ const SupportedSafesInfo: {[chainId: number]: {name: string, chainId: number, rp
     1313161554: {
         name: "Aurora Mainnet",
         chainId: 1313161554,
-        rpcURL: "https://safe-transaction.aurora.gnosis.io/",
+        rpcURL: "https://safe-transaction-aurora.safe.global/",
         class: AuroraMainnet,
     },
     100: {
         name: "Gnosis",
         chainId: 100,
-        rpcURL: "https://safe-transaction.xdai.gnosis.io/",
+        rpcURL: "https://safe-transaction-gnosis-chain.safe.global/",
         class: GnosisMainnet,
     },
     900001: {

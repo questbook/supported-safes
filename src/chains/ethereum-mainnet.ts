@@ -6,7 +6,7 @@ export class EthereumMainnet extends gnosis {
     safeLogo: string;
 
     constructor(safeAddress: string) {
-        super(1, 'https://safe-transaction.mainnet.gnosis.io/', safeAddress)
+        super(1, 'https://safe-transaction-mainnet.safe.global/', safeAddress)
         this.chainName = 'Ethereum Mainnet'
         this.chainLogo = 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png'
         this.safeLogo = '/safes_icons/safe.svg'

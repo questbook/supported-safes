@@ -6,7 +6,7 @@ export class ArbitrumMainnet extends gnosis {
     safeLogo: string;
 
     constructor(safeAddress: string) {
-        super(42161,'https://safe-transaction.arbitrum.gnosis.io/', safeAddress)
+        super(42161,'https://safe-transaction-arbitrum.safe.global/', safeAddress)
         this.chainName = 'Arbitrum Mainnet'
         this.chainLogo = 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/arbitrum/info/logo.png'
         this.safeLogo = '/safes_icons/safe.svg'
