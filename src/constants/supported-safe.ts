@@ -16,8 +16,8 @@ import { RinkebyTestnet } from "../chains/rinkeby-testnet"
 import { SolanaDevnet } from "../chains/solana-devnet"
 import { SolanaMainnet } from "../chains/solana-mainnet"
 import { TelosMainnet } from "../chains/telos-mainnet"
-
-const SupportedSafesInfo: {[chainId: number]: {name: string, chainId: number, rpcURL: string, class: typeof EthereumMainnet | typeof SolanaMainnet}} = {
+import { TonKeyTestnet } from "../chains/tonkey-testnet"
+const SupportedSafesInfo: {[chainId: number]: {name: string, chainId: number, rpcURL: string, class: typeof EthereumMainnet | typeof SolanaMainnet |typeof TonKeyTestnet}} = {
     1: {
         name: "Ethereum Mainnet",
         chainId: 1,
@@ -125,6 +125,12 @@ const SupportedSafesInfo: {[chainId: number]: {name: string, chainId: number, rp
         chainId: 4690,
         rpcURL: 'https://transaction-testnet.safe.iotex.io',
         class: IoTexTestnet,
+    },
+    3:{
+        name:'hi',
+        chainId:-3,
+        rpcURL: 'https://graphql.tonkey.app/graphql',
+        class: TonKeyTestnet
     }
 }
 

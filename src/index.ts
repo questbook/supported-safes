@@ -1,12 +1,13 @@
 import { EthereumMainnet } from "./chains/ethereum-mainnet";
 import { SolanaMainnet } from "./chains/solana-mainnet";
+import { TonKeyTestnet } from "./chains/tonkey-testnet";
 import SupportedSafesInfo from "./constants/supported-safe";
 import SupportedWalletsInfo from "./constants/supported-wallets";
 import { SafeDetailsInterface } from "./types/Safe";
 import { TonWallet } from "./wallets/TON";
 export class SupportedPayouts {
 
-    getSafe(chainId: number, safeAddress: string): EthereumMainnet | SolanaMainnet {
+    getSafe(chainId: number, safeAddress: string): EthereumMainnet | SolanaMainnet| TonKeyTestnet {
         const safeInfo = SupportedSafesInfo[chainId];
         if (safeInfo) {
             return new safeInfo.class(safeAddress);
@@ -17,7 +18,7 @@ export class SupportedPayouts {
         const CHAIN_IDS = Object.keys(SupportedSafesInfo);
 
         const safes = await Promise.all(CHAIN_IDS.map(async (chainId) => {
-            const safeInfo: {name: string, chainId: number, rpcURL: string, class: typeof EthereumMainnet | typeof SolanaMainnet} = SupportedSafesInfo[chainId];
+            const safeInfo: {name: string, chainId: number, rpcURL: string, class: typeof EthereumMainnet | typeof SolanaMainnet | typeof TonKeyTestnet} = SupportedSafesInfo[chainId];
             console.log(safeInfo, chainId)
             if(address){        
                 try{
