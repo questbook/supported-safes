@@ -8,42 +8,18 @@ export class tonkey implements SafeInterface {
     rpcURL: string
     safeAddress: string
     provider: any
-    tonReady: boolean
-    address: string
-    isConnected: boolean
+
     constructor(chainId: number, rpcURL: string, safeAddress: string) {
         this.chainId = chainId
         this.chainIdString = chainId.toString()
         this.rpcURL = rpcURL
         this.safeAddress = safeAddress
-        this.tonReady = false
-        this.address = ""
-        this.isConnected = false
-    }
-    connect = async () => {
-        if (!this.tonReady) {
-            this.isConnected = false
-            return
-        }
-        const accounts = await this.provider.send('ton_requestAccounts')
-        this.isConnected = true
-        const account = accounts[0]
-        this.address = account
-    }
-
-    async checkTonReady(window: any) {
-        if (window.ton) {
-            this.provider = window.ton
-            this.tonReady = true
-            console.log('TONKey ready')
-            return true
-        }
-        return false
     }
 
     toRawAddress(address: string): string {
         return new TonWeb.Address(address).toString(false);
     }
+
     async getOwners(): Promise<string[]> {
         try {
             const rawAddr = this.toRawAddress(this.safeAddress);
@@ -85,29 +61,27 @@ export class tonkey implements SafeInterface {
             throw new Error("error in getOwners")
         }
     }
+
     async isOwner(userAddress: string): Promise<boolean> {
         const owners = await this.getOwners()
         const userRawAddress = new TonWeb.Address(userAddress).toString(false)
         return owners.includes(userRawAddress)
     }
 
-    async signToken(tonTransfer: any) {
-        await this.connect();
+    async signToken(tonTransfer: any, wallet: any) {
 
-        if (!this.isConnected) {
-            throw new Error('Error in signToken: TON wallet is not connected')
-        }
         const orderCellBoc = tonTransfer.multiSigExecutionInfo.orderCellBoc;
 
         const [cell] = TonWeb.boc.Cell.fromBoc(orderCellBoc);
 
         const orderHash = TonWeb.utils.bytesToHex(await cell.hash());
-        const signature = await this.provider.send("ton_rawSign", {
+        const signature = await wallet.send("ton_rawSign", {
             data: orderHash,
         });
         return signature
     }
-    async genToken(recipient: string, amount: string): Promise<any> {
+
+    async genToken(recipient: string, amount: string, wallet: any): Promise<any> {
         const rawSafeAddr = this.toRawAddress(this.safeAddress);
         const nanoAmount = TonWeb.utils.toNano(amount).toString();
         const reqVar = {
@@ -167,7 +141,7 @@ export class tonkey implements SafeInterface {
             console.log(res, 'res')
             console.log("get payload successfully")
 
-            const signature = await this.signToken(res.tonTransfer)
+            const signature = await this.signToken(res.tonTransfer, wallet)
 
             console.log('signed successfully: ', signature)
             res.tonTransfer.multiSigExecutionInfo.confirmations[0] = signature;
@@ -178,6 +152,7 @@ export class tonkey implements SafeInterface {
         }
 
     }
+
     async createTransaction(tonTransfer: any) {
         const reqVar = { content: tonTransfer };
         const queryId = tonTransfer.multiSigExecutionInfo.queryId;
@@ -210,13 +185,14 @@ export class tonkey implements SafeInterface {
         return queryId
     }
 
-    async proposeTransaction(recipient: string, amount: string): Promise<string | errorMessage> {
-        const token = await this.genToken(recipient, amount)
+    async proposeTransaction(recipient: string, amount: string, wallet: any): Promise<string | errorMessage> {
+        const token = await this.genToken(recipient, amount, wallet)
 
         console.log('TON signed token: ', token)
 
         return await this.createTransaction(token)
     }
+
     async getSafeDetails(): Promise<SafeDetailsInterface> {
         const owners = await this.getOwners()
         if (!owners || owners.length == 0){
@@ -285,9 +261,11 @@ export class tonkey implements SafeInterface {
         }
 
     }
+
     getNextSteps(): string[] {
         return ['Open the transaction on TonKey', 'Sign the newly created proposal', 'Ask all the multi-sig signers to sign the proposal']
     }
+
     async proposeTransactions(grantName: string, initiateTransactionData: TransactionDataInterface[], wallet: '' | PhantomProvider): Promise<string | errorMessage> {
         return { error: 'use proposeTransaction insted' }
     }
