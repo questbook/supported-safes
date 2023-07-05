@@ -256,7 +256,8 @@ export class tonkey implements SafeInterface {
                 throw new Error("Error in getBalance: GraphQL API Failed");
             }
             if (result.data.safe === null) console.log("no Data");
-            const balance = result.data.balance.fiatTotal;
+            const balance = Number(result.data.balance.fiatTotal);
+            
             return balance
         }
 
