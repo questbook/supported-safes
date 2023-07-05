@@ -23,4 +23,7 @@ export class OptimismMainnet extends gnosis {
     getIsEvm(){
         return true;
     }
+    getIsTon(){
+        return false
+    }
 }

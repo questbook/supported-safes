@@ -23,4 +23,7 @@ export class EthereumMainnet extends gnosis {
     getIsEvm(){
         return true;
     }
+    getIsTon(){
+        return false
+    }
 }

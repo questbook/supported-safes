@@ -23,4 +23,7 @@ export class SolanaMainnet extends realms {
     getIsEvm(){
         return false;
     }
+    getIsTon(){
+        return false
+    }
 }

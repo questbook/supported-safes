@@ -23,4 +23,7 @@ export class AvalancheMainnet extends gnosis {
     getIsEvm(){
         return true;
     }
+    getIsTon(){
+        return false
+    }
 }

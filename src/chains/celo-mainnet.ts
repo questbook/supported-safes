@@ -23,4 +23,7 @@ export class CeloMainnet extends gnosis {
     getIsEvm(){
         return true;
     }
+    getIsTon(){
+        return false
+    }
 }

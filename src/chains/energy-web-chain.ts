@@ -23,4 +23,7 @@ export class EnergyWebChain extends gnosis {
     getIsEvm(){
         return true;
     }
+    getIsTon(){
+        return false
+    }
 }

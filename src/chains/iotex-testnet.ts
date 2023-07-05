@@ -23,4 +23,7 @@ export class IoTexTestnet extends gnosis {
     getIsEvm(){
         return true;
     }
+    getIsTon(){
+        return false
+    }
 }

@@ -23,4 +23,7 @@ export class ArbitrumMainnet extends gnosis {
     getIsEvm(){
         return true;
     }
+    getIsTon(){
+        return false
+    }
 }

@@ -23,4 +23,7 @@ export class TonKeyTestnet extends tonkey {
     getIsEvm(){
         return false;
     }
+    getIsTon(){
+        return true
+    }
 }
