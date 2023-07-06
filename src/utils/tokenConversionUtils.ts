@@ -42,4 +42,20 @@ const getCeloTokenUSDRate = async () => {
 	return response;
 }
 
-export {solanaToUsd, solanaToUsdRate, solanaToUsdOnDate, usdToSolana, getCeloTokenUSDRate, getDateInDDMMYYYY}
+const getTokenUSDonDate = async (tokenName: string, date: string) => {
+    if (!date) return 0
+	let url = `https://api.coingecko.com/api/v3/coins/${tokenName}/history?date=${date}&localization=false`
+	let tokenUsdValue = parseFloat((await axios.get(url)).data?.market_data?.current_price?.usd)
+	
+	return tokenUsdValue;
+}
+
+export { 
+    getTokenUSDonDate,
+    solanaToUsd, 
+    solanaToUsdRate, 
+    solanaToUsdOnDate, 
+    usdToSolana, 
+    getCeloTokenUSDRate, 
+    getDateInDDMMYYYY
+}

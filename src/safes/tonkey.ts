@@ -1,5 +1,6 @@
 import TonWeb from 'tonweb';
 import { PhantomProvider, SafeDetailsInterface, SafeInterface, TokenDetailsInterface, TransactionDataInterface, errorMessage } from '../types/Safe';
+import { getTokenUSDonDate } from '../utils/tokenConversionUtils';
 export const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 export class tonkey implements SafeInterface {
@@ -215,10 +216,15 @@ export class tonkey implements SafeInterface {
     async getTokenAndbalance(): Promise<{ value?: TokenDetailsInterface[]; error?: string; }> {
         let list: TokenDetailsInterface[] = []
         const balance = await this.getBalance()
-        const tonUsdRate = 1.43
+
+        const currentTime = (new Date()).toLocaleDateString().split('/').join('-')
+        const TONTokenId = 'the-open-network'
+
+        const tonUsdRate = await getTokenUSDonDate(TONTokenId, currentTime)
+
         list.push({
             tokenIcon: '/network_icons/solana.svg',
-            tokenName: 'TON',
+            tokenName: TONTokenId,
             tokenValueAmount: undefined,
             usdValueAmount: balance,
             mintAddress: undefined,
