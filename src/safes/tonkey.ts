@@ -95,6 +95,7 @@ export class tonkey implements SafeInterface {
     }
 
     async genToken(recipient: string, amount: string, wallet: any, ownerIndex: number): Promise<any> {
+        console.log('Hasan and ali',{amount,recipient})
         const rawSafeAddr = this.toRawAddress(this.safeAddress);
         const nanoAmount = TonWeb.utils.toNano(amount).toString();
         const reqVar = {
@@ -176,8 +177,8 @@ export class tonkey implements SafeInterface {
         const tonUsdRate = await getTokenUSDonDate(TONTokenId, currentTime)
         
         newTonTransfer.transfer.transferInfo.native.value = 
-            ((parseFloat(newTonTransfer.transfer.transferInfo.native.value) / tonUsdRate).toFixed(this.tonDecimals)).toString()
-
+            (parseFloat(newTonTransfer.transfer.transferInfo.native.value) / tonUsdRate).toFixed(this.tonDecimals)
+        console.log('Hasan and ali',{newTonTransfer})
         const reqVar = { content: newTonTransfer };
         const queryId = newTonTransfer.multiSigExecutionInfo.queryId;
         const response = await fetch(`${this.rpcURL}`, {
