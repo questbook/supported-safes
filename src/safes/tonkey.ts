@@ -176,7 +176,7 @@ export class tonkey implements SafeInterface {
         const tonUsdRate = await getTokenUSDonDate(TONTokenId, currentTime)
         
         newTonTransfer.transfer.transferInfo.native.value = 
-            (parseFloat(newTonTransfer.transfer.transferInfo.native.value) / tonUsdRate).toFixed(this.tonDecimals)
+            ((parseFloat(newTonTransfer.transfer.transferInfo.native.value) / tonUsdRate).toFixed(this.tonDecimals)).toString()
 
         const reqVar = { content: newTonTransfer };
         const queryId = newTonTransfer.multiSigExecutionInfo.queryId;
