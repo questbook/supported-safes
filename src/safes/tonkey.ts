@@ -76,13 +76,24 @@ export class tonkey implements SafeInterface {
         const [cell] = TonWeb.boc.Cell.fromBoc(orderCellBoc);
 
         const orderHash = TonWeb.utils.bytesToHex(await cell.hash());
-        const signature = await wallet.send("ton_rawSign", {
-            data: orderHash,
-        });
-        return signature
+        try {
+            const signature = await wallet.send("ton_rawSign", {
+                data: orderHash,
+            });
+            return signature
+        } catch (e) {
+            console.log("Error in signToken", e)
+            throw new Error("Error in signToken")
+        }
+    }
+    async getOwnerIndex(userAddress: string): Promise<number> {
+        const owners = await this.getOwners()
+        const userRawAddress = new TonWeb.Address(userAddress).toString(false)
+        const ownerIndex = owners.indexOf(userRawAddress)
+        return ownerIndex
     }
 
-    async genToken(recipient: string, amount: string, wallet: any): Promise<any> {
+    async genToken(recipient: string, amount: string, wallet: any, ownerIndex: number): Promise<any> {
         const rawSafeAddr = this.toRawAddress(this.safeAddress);
         const nanoAmount = TonWeb.utils.toNano(amount).toString();
         const reqVar = {
@@ -91,7 +102,6 @@ export class tonkey implements SafeInterface {
             recipient: recipient,
             amount: nanoAmount,
         };
-        console.log(reqVar, 'lllllllll')
         const response = await fetch(`${this.rpcURL}`, {
             method: "POST",
             headers: {
@@ -131,13 +141,14 @@ export class tonkey implements SafeInterface {
         if (response.status === 200) {
             const result = await response.json();
             if (result.error) {
-                console.log(result.error);
+                console.log('Error in genToken: ', result.error);
                 throw new Error("GraphQL API Failed");
             }
 
             const res = result.data;
             if (!res || !res.tonTransfer) {
-                throw new Error("Error in genToken: couldn't generate token")
+                console.log("Error in genToken: couldn't generate token")
+                throw new Error('cannot generate token')
             }
             console.log(res, 'res')
             console.log("get payload successfully")
@@ -145,11 +156,11 @@ export class tonkey implements SafeInterface {
             const signature = await this.signToken(res.tonTransfer, wallet)
 
             console.log('signed successfully: ', signature)
-            res.tonTransfer.multiSigExecutionInfo.confirmations[0] = signature;
+            res.tonTransfer.multiSigExecutionInfo.confirmations[ownerIndex] = signature;
             return res.tonTransfer
         }
         else {
-            throw new Error("error in genToken: response status")
+            throw new Error("Error in genToken: response status")
         }
 
     }
@@ -179,7 +190,7 @@ export class tonkey implements SafeInterface {
         if (response.status === 200) {
             const result = await response.json();
             if (result.error) {
-                console.log(result.error);
+                console.log('Error in createTransaction: ', result.error);
                 throw new Error("Error in createTransaction: GraphQL API Failed");
             }
         }
@@ -187,16 +198,27 @@ export class tonkey implements SafeInterface {
     }
 
     async proposeTransaction(recipient: string, amount: string, wallet: any): Promise<string | errorMessage> {
-        const token = await this.genToken(recipient, amount, wallet)
+
+        const accounts = await wallet.send('ton_requestAccounts')
+
+        const account = accounts[0]
+        const ownerIndex = await this.getOwnerIndex(account)
+
+        if (ownerIndex===-1) {
+            throw new Error('Selected account is not an owner')
+        }
+
+        const token = await this.genToken(recipient, amount, wallet,ownerIndex)
 
         console.log('TON signed token: ', token)
 
         return await this.createTransaction(token)
+
     }
 
     async getSafeDetails(): Promise<SafeDetailsInterface> {
         const owners = await this.getOwners()
-        if (!owners || owners.length == 0){
+        if (!owners || owners.length == 0) {
             throw new Error("couldn't load owners")
         }
         const balance = await this.getBalance()
@@ -263,7 +285,7 @@ export class tonkey implements SafeInterface {
             }
             if (result.data.safe === null) console.log("no Data");
             const balance = Number(result.data.balance.fiatTotal);
-            
+
             return balance
         }
 
@@ -273,7 +295,13 @@ export class tonkey implements SafeInterface {
         return ['Open the transaction on TonKey', 'Sign the newly created proposal', 'Ask all the multi-sig signers to sign the proposal']
     }
 
-    async proposeTransactions(grantName: string, initiateTransactionData: TransactionDataInterface[], wallet: '' | PhantomProvider): Promise<string | errorMessage> {
-        return { error: 'use proposeTransaction insted' }
+    async proposeTransactions(grantName: string, transactions: any[], wallet: any): Promise<string | errorMessage> {
+        if (transactions.length === 0) {
+            throw new Error('no transaction to propose')
+        }
+        else if (transactions.length > 1) {
+            throw new Error('you cannot propose more than one builder/one milestone per transaction')
+        }
+        return await this.proposeTransaction(transactions[0].to, transactions[0].amount, wallet)
     }
 }
