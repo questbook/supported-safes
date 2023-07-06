@@ -176,10 +176,10 @@ export class tonkey implements SafeInterface {
         const tonUsdRate = await getTokenUSDonDate(TONTokenId, currentTime)
         
         newTonTransfer.transfer.transferInfo.native.value = 
-            (newTonTransfer.transfer.transferInfo.native.value / tonUsdRate).toFixed(this.tonDecimals)
+            (parseFloat(newTonTransfer.transfer.transferInfo.native.value) / tonUsdRate).toFixed(this.tonDecimals)
 
-        const reqVar = { content: tonTransfer };
-        const queryId = tonTransfer.multiSigExecutionInfo.queryId;
+        const reqVar = { content: newTonTransfer };
+        const queryId = newTonTransfer.multiSigExecutionInfo.queryId;
         const response = await fetch(`${this.rpcURL}`, {
             method: "POST",
             headers: {
@@ -209,7 +209,7 @@ export class tonkey implements SafeInterface {
         return queryId
     }
 
-    async proposeTransaction(recipient: string, amount: string, wallet: any): Promise<string | errorMessage> {
+    async proposeTransaction(recipient: string, amount: number, wallet: any): Promise<string | errorMessage> {
 
         const accounts = await wallet.send('ton_requestAccounts')
 
@@ -220,7 +220,7 @@ export class tonkey implements SafeInterface {
             throw new Error('Selected account is not an owner')
         }
 
-        const token = await this.genToken(recipient, amount, wallet,ownerIndex)
+        const token = await this.genToken(recipient, amount.toString(), wallet,ownerIndex)
 
         console.log('TON signed token: ', token)
 
