@@ -244,7 +244,7 @@ export class tonkey implements SafeInterface {
             networkType: 3,
             networkId: -3,
             safeType: 'TonKey',
-            safeIcon: '/safes_icons/realms.svg'
+            safeIcon: '/icons/tonkey.svg'
         }
     }
 
