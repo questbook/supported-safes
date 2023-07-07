@@ -8,7 +8,7 @@ export class TonKeyTestnet extends tonkey {
     constructor(safeAddress: string) {
         super(-3, 'https://graphql.tonkey.app/graphql', safeAddress)
         this.chainName = 'TON testnet'
-        this.chainLogo = 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png'
+        this.chainLogo = 'https://github.com/trustwallet/assets/blob/master/blockchains/ton/info/logo.png'
         this.safeLogo = '/v2/icons/tonkey.svg'
     }
 
