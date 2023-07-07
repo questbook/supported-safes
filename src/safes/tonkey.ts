@@ -257,7 +257,7 @@ export class tonkey implements SafeInterface {
         const tonUsdRate = await getTokenUSDonDate(this.TONTokenId, currentTime)
 
         list.push({
-            tokenIcon: undefined,
+            tokenIcon: '/icons/toncoin.svg',
             tokenName: 'TON',
             tokenValueAmount: undefined,
             usdValueAmount: balance,
