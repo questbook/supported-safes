@@ -10,6 +10,7 @@ export class tonkey implements SafeInterface {
     safeAddress: string
     provider: any
     tonDecimals: number = 9
+    TONTokenId: string = 'the-open-network'
 
     constructor(chainId: number, rpcURL: string, safeAddress: string) {
         this.chainId = chainId
@@ -172,9 +173,8 @@ export class tonkey implements SafeInterface {
         const newTonTransfer = tonTransfer;
         
         const currentTime = (new Date()).toLocaleDateString().split('/').join('-')
-        const TONTokenId = 'the-open-network'
 
-        const tonUsdRate = await getTokenUSDonDate(TONTokenId, currentTime)
+        const tonUsdRate = await getTokenUSDonDate(this.TONTokenId, currentTime)
         
         newTonTransfer.transfer.transferInfo.native.value = 
             (parseFloat(newTonTransfer.transfer.transferInfo.native.value) / tonUsdRate).toFixed(this.tonDecimals)
@@ -253,13 +253,12 @@ export class tonkey implements SafeInterface {
         const balance = await this.getBalance()
 
         const currentTime = (new Date()).toLocaleDateString().split('/').join('-')
-        const TONTokenId = 'the-open-network'
 
-        const tonUsdRate = await getTokenUSDonDate(TONTokenId, currentTime)
+        const tonUsdRate = await getTokenUSDonDate(this.TONTokenId, currentTime)
 
         list.push({
             tokenIcon: undefined,
-            tokenName: TONTokenId,
+            tokenName: 'TON',
             tokenValueAmount: undefined,
             usdValueAmount: balance,
             mintAddress: undefined,
