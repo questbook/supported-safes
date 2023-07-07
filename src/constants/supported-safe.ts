@@ -126,8 +126,8 @@ const SupportedSafesInfo: {[chainId: number]: {name: string, chainId: number, rp
         rpcURL: 'https://transaction-testnet.safe.iotex.io',
         class: IoTexTestnet,
     },
-    3:{
-        name:'hi',
+    512342:{
+        name:'TON Testnet',
         chainId:-3,
         rpcURL: 'https://graphql.tonkey.app/graphql',
         class: TonKeyTestnet
