@@ -2,6 +2,7 @@ import TonWeb from 'tonweb';
 import { PhantomProvider, SafeDetailsInterface, SafeInterface, TokenDetailsInterface, TransactionDataInterface, errorMessage } from '../types/Safe';
 import { getTokenUSDonDate } from '../utils/tokenConversionUtils';
 export const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+import { ethers } from 'ethers';
 
 export class tonkey implements SafeInterface {
     chainIdString: string
@@ -66,6 +67,9 @@ export class tonkey implements SafeInterface {
     }
 
     async isOwner(userAddress: string): Promise<boolean> {
+        if(!userAddress || userAddress === ''){
+            throw new Error ("address is empty")
+        }
         const owners = await this.getOwners()
         const userRawAddress = new TonWeb.Address(userAddress).toString(false)
         return owners.includes(userRawAddress)
@@ -96,14 +100,21 @@ export class tonkey implements SafeInterface {
     }
 
     async genToken(recipient: string, amount: string, wallet: any, ownerIndex: number): Promise<any> {
-        console.log('Hasan and ali',{amount,recipient})
-        const rawSafeAddr = this.toRawAddress(this.safeAddress);
-        const nanoAmount = TonWeb.utils.toNano(amount).toString();
+        
+        const rawSafeAddr = (this.toRawAddress(this.safeAddress))
+
+        const nanoAmount = TonWeb.utils.toNano(amount).toString()
+
+        const currentTime = (new Date()).toLocaleDateString().split('/').join('-')
+        const TONTokenId = 'the-open-network'
+        const tonUsdRate = await getTokenUSDonDate(TONTokenId, currentTime)
+        const amountInTon = (parseFloat(nanoAmount) / tonUsdRate).toFixed(0)
+        
         const reqVar = {
             chainId: this.chainIdString,
             safeAddress: rawSafeAddr,
             recipient: recipient,
-            amount: nanoAmount,
+            amount: amountInTon,
         };
         const response = await fetch(`${this.rpcURL}`, {
             method: "POST",
@@ -170,17 +181,9 @@ export class tonkey implements SafeInterface {
 
     async createTransaction(tonTransfer: any) {
 
-        const newTonTransfer = tonTransfer;
-        
-        const currentTime = (new Date()).toLocaleDateString().split('/').join('-')
-
-        const tonUsdRate = await getTokenUSDonDate(this.TONTokenId, currentTime)
-        
-        newTonTransfer.transfer.transferInfo.native.value = 
-            (parseFloat(newTonTransfer.transfer.transferInfo.native.value) / tonUsdRate).toFixed(this.tonDecimals)
-        console.log('Hasan and ali',{newTonTransfer})
-        const reqVar = { content: newTonTransfer };
-        const queryId = newTonTransfer.multiSigExecutionInfo.queryId;
+        console.log('Hasan and ali',tonTransfer.transfer.transferInfo.native.value)
+        const reqVar = { content: tonTransfer };
+        const queryId = tonTransfer.multiSigExecutionInfo.queryId;
         const response = await fetch(`${this.rpcURL}`, {
             method: "POST",
             headers: {
@@ -206,6 +209,9 @@ export class tonkey implements SafeInterface {
                 console.log('Error in createTransaction: ', result.error);
                 throw new Error("Error in createTransaction: GraphQL API Failed");
             }
+        }
+        else {
+            throw new Error ('Error in createTransaction response status')
         }
         return queryId
     }
