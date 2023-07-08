@@ -100,7 +100,7 @@ export class tonkey implements SafeInterface {
     }
 
     async genToken(recipient: string, amount: string, wallet: any, ownerIndex: number): Promise<any> {
-
+        console.log('started generating token')
         const rawSafeAddr = (this.toRawAddress(this.safeAddress))
 
         const nanoAmount = TonWeb.utils.toNano(amount).toString()
