@@ -100,7 +100,7 @@ export class tonkey implements SafeInterface {
     }
 
     async genToken(recipient: string, amount: string, wallet: any, ownerIndex: number): Promise<any> {
-        
+
         const rawSafeAddr = (this.toRawAddress(this.safeAddress))
 
         const nanoAmount = TonWeb.utils.toNano(amount).toString()
@@ -108,8 +108,12 @@ export class tonkey implements SafeInterface {
         const currentTime = (new Date()).toLocaleDateString().split('/').join('-')
         const TONTokenId = 'the-open-network'
         const tonUsdRate = await getTokenUSDonDate(TONTokenId, currentTime)
+
         const amountInTon = (parseFloat(nanoAmount) / tonUsdRate).toFixed(0)
         
+        if(!amountInTon){
+            throw new Error ("cannot calculate the amount")
+        }
         const reqVar = {
             chainId: this.chainIdString,
             safeAddress: rawSafeAddr,
@@ -261,7 +265,6 @@ export class tonkey implements SafeInterface {
         const currentTime = (new Date()).toLocaleDateString().split('/').join('-')
 
         const tonUsdRate = await getTokenUSDonDate(this.TONTokenId, currentTime)
-
         list.push({
             tokenIcon: '/v2/icons/toncoin.svg',
             tokenName: 'TON',
