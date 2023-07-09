@@ -16,6 +16,7 @@ import { RinkebyTestnet } from "../chains/rinkeby-testnet"
 import { SolanaDevnet } from "../chains/solana-devnet"
 import { SolanaMainnet } from "../chains/solana-mainnet"
 import { TelosMainnet } from "../chains/telos-mainnet"
+import { TonKeyMainnet } from "../chains/tonkey-mainnet"
 import { TonKeyTestnet } from "../chains/tonkey-testnet"
 const SupportedSafesInfo: {[chainId: number]: {name: string, chainId: number, rpcURL: string, class: typeof EthereumMainnet | typeof SolanaMainnet |typeof TonKeyTestnet}} = {
     1: {
@@ -131,6 +132,12 @@ const SupportedSafesInfo: {[chainId: number]: {name: string, chainId: number, rp
         chainId:-3,
         rpcURL: 'https://graphql.tonkey.app/graphql',
         class: TonKeyTestnet
+    },
+    512341:{
+        name:'TON Mainnet',
+        chainId:-239,
+        rpcURL: 'https://graphql.tonkey.app/graphql',
+        class: TonKeyMainnet
     }
 }
 
