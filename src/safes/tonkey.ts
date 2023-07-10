@@ -252,7 +252,7 @@ export class tonkey implements SafeInterface {
             owners: owners,
             amount: balance,
             networkType: 3,
-            networkId: -3,
+            networkId: this.chainId,
             safeType: 'TonKey',
             safeIcon: '/icons/tonkey.svg'
         }
