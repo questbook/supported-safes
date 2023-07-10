@@ -17,8 +17,7 @@ import { SolanaDevnet } from "../chains/solana-devnet"
 import { SolanaMainnet } from "../chains/solana-mainnet"
 import { TelosMainnet } from "../chains/telos-mainnet"
 import { TonKeyMainnet } from "../chains/tonkey-mainnet"
-import { TonKeyTestnet } from "../chains/tonkey-testnet"
-const SupportedSafesInfo: {[chainId: number]: {name: string, chainId: number, rpcURL: string, class: typeof EthereumMainnet | typeof SolanaMainnet |typeof TonKeyTestnet}} = {
+const SupportedSafesInfo: {[chainId: number]: {name: string, chainId: number, rpcURL: string, class: typeof EthereumMainnet | typeof SolanaMainnet |typeof TonKeyMainnet}} = {
     1: {
         name: "Ethereum Mainnet",
         chainId: 1,
@@ -126,12 +125,6 @@ const SupportedSafesInfo: {[chainId: number]: {name: string, chainId: number, rp
         chainId: 4690,
         rpcURL: 'https://transaction-testnet.safe.iotex.io',
         class: IoTexTestnet,
-    },
-    512342:{
-        name:'TON Testnet',
-        chainId:-3,
-        rpcURL: 'https://graphql.tonkey.app/graphql',
-        class: TonKeyTestnet
     },
     512341:{
         name:'TON Mainnet',
