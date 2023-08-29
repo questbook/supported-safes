@@ -32,8 +32,8 @@ export class gnosis implements SafeInterface {
 		if(!provider) {
 			//@ts-ignore
 			provider = new ethers.providers.Web3Provider(window.ethereum)
+			await provider.send('eth_requestAccounts', [])
 		}
-		await provider.send('eth_requestAccounts', [])
 		const signer = provider.getSigner()
 		
 		const currentChain = await signer.getChainId()
@@ -151,8 +151,8 @@ export class gnosis implements SafeInterface {
 		if(!provider) {
 			//@ts-ignore
 			provider = new ethers.providers.Web3Provider(window.ethereum)
+			await provider.send('eth_requestAccounts', [])
 		}
-		await provider.send('eth_requestAccounts', [])
 		const signer = provider.getSigner()
 		const currentChain = await signer.getChainId()
 		if (currentChain !== this.chainId) {
