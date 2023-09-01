@@ -153,21 +153,21 @@ export class gnosis implements SafeInterface {
 			provider = new ethers.providers.Web3Provider(window.ethereum)
 			await provider.send('eth_requestAccounts', [])
 		}
-		const signer = provider.getSigner()
-		const currentChain = await signer.getChainId()
-		if (currentChain !== this.chainId) {
-			console.log("you're on the wrong chain")
-			return false
-		}
+		// const signer = provider.getSigner()
+		// const currentChain = await signer.getChainId()
+		// if (currentChain !== this.chainId) {
+		// 	console.log("you're on the wrong chain")
+		// 	return false
+		// }
 
 		const ethAdapter = new EthersAdapter({
 			ethers,
-			signerOrProvider: signer,
+			signerOrProvider: provider,
 		})
 
 		let safeSdk
 
-		console.log('safe addrees', this.safeAddress, this.chainId, signer)
+		console.log('safe addrees', this.safeAddress, this.chainId, provider)
 
 		if (this.chainId === 40) {
 			const id = await ethAdapter.getChainId()
