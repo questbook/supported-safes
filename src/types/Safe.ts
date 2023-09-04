@@ -88,8 +88,8 @@ export interface SafeInterface {
     chainId: number;
     rpcURL: string;
     safeAddress: string | undefined;
-    proposeTransactions(grantName: string, initiateTransactionData: TransactionDataInterface[], wallet: PhantomProvider|'', provider?: ethers.providers.Web3Provider): Promise<string | errorMessage>;
-    isOwner(safeAddress: string, provider?: ethers.providers.Web3Provider): Promise<boolean>;
+    proposeTransactions(grantName: string, initiateTransactionData: TransactionDataInterface[], wallet: PhantomProvider|'', signer?: ethers.providers.JsonRpcSigner): Promise<string | errorMessage>;
+    isOwner(safeAddress: string, signer?: ethers.providers.JsonRpcSigner): Promise<boolean>;
     getOwners (): Promise<string[] | errorMessage>;
     getSafeDetails(): Promise<SafeDetailsInterface>;
     getTokenAndbalance(): Promise<{value?: TokenDetailsInterface[], error?: string}>;

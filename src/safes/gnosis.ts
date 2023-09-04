@@ -21,21 +21,14 @@ export class gnosis implements SafeInterface {
 		this.safeAddress = ethers.utils.getAddress(safeAddress)
 	}
 
-	async proposeTransactions(extraData: string, initiateTransactionData: any, wallet: any,  provider?: ethers.providers.Web3Provider): Promise<string| errorMessage>  {
+	async proposeTransactions(extraData: string, initiateTransactionData: any, wallet: any, signer: ethers.providers.JsonRpcSigner): Promise<string | errorMessage> {
 		const { workspaceId, grantAddress } = JSON.parse(extraData)
 		if (!workspaceId || !grantAddress) {
-			return {error: 'Invalid workspaceId or grantAddress'}
+			return { error: 'Invalid workspaceId or grantAddress' }
 		}
 		const readyToExecuteTxs = await createEVMMetaTransactions(workspaceId, grantAddress, this.chainId.toString(), initiateTransactionData)
 		console.log('creating gnosis transaction for (edited)', readyToExecuteTxs)
-		
-		if(!provider) {
-			//@ts-ignore
-			provider = new ethers.providers.Web3Provider(window.ethereum)
-			await provider.send('eth_requestAccounts', [])
-		}
-		const signer = provider.getSigner()
-		
+
 		const currentChain = await signer.getChainId()
 		if (currentChain !== this.chainId) {
 			const network = await switchNetwork({
@@ -120,7 +113,7 @@ export class gnosis implements SafeInterface {
 					if (nextNonce - initialNonce > 10) throw new Error('Too many pending transactions')
 				} while (true)
 
-				safeTransaction = await safeSdk.createTransaction({ safeTransactionData: readyToExecuteTxs, options: { nonce: nextNonce }})
+				safeTransaction = await safeSdk.createTransaction({ safeTransactionData: readyToExecuteTxs, options: { nonce: nextNonce } })
 			} else {
 				safeTransaction = await safeSdk.createTransaction({ safeTransactionData: readyToExecuteTxs })
 			}
@@ -143,31 +136,25 @@ export class gnosis implements SafeInterface {
 		} catch (e: any) {
 			// return undefined
 			console.log(e)
-			return ({error: e.message})
+			return ({ error: e.message })
 		}
 	}
 
-    async isOwner(userAddress: string, provider?: ethers.providers.Web3Provider): Promise<boolean> {
-		if(!provider) {
-			//@ts-ignore
-			provider = new ethers.providers.Web3Provider(window.ethereum)
-			await provider.send('eth_requestAccounts', [])
+	async isOwner(userAddress: string, signer: ethers.providers.JsonRpcSigner): Promise<boolean> {
+		const currentChain = await signer.getChainId()
+		if (currentChain !== this.chainId) {
+			console.log("you're on the wrong chain")
+			return false
 		}
-		// const signer = provider.getSigner()
-		// const currentChain = await signer.getChainId()
-		// if (currentChain !== this.chainId) {
-		// 	console.log("you're on the wrong chain")
-		// 	return false
-		// }
 
 		const ethAdapter = new EthersAdapter({
 			ethers,
-			signerOrProvider: provider,
+			signerOrProvider: signer,
 		})
 
 		let safeSdk
 
-		console.log('safe addrees', this.safeAddress, this.chainId, provider)
+		console.log('safe addrees', this.safeAddress, this.chainId, signer)
 
 		if (this.chainId === 40) {
 			const id = await ethAdapter.getChainId()
@@ -228,7 +215,7 @@ export class gnosis implements SafeInterface {
 		return res
 	}
 
-	async getOwners (): Promise<string[]> {
+	async getOwners(): Promise<string[]> {
 		const gnosisUrl = `${this.rpcURL}/api/v1/safes/${this.safeAddress}`
 		const response = await axios.get(gnosisUrl)
 		return response.data.owners;
@@ -241,7 +228,7 @@ export class gnosis implements SafeInterface {
 			return undefined
 		}
 		let usdAmount = 0;
-		tokenListAndBalance?.value?.map((obj:any)=>{
+		tokenListAndBalance?.value?.map((obj: any) => {
 			usdAmount += obj.usdValueAmount
 		})
 		const owners = await this.getOwners();
@@ -257,7 +244,7 @@ export class gnosis implements SafeInterface {
 		}
 	}
 
-	async getTokenAndbalance(): Promise<{value?: TokenDetailsInterface[], error?: string}> {
+	async getTokenAndbalance(): Promise<{ value?: TokenDetailsInterface[], error?: string }> {
 		const tokenList: any[] = []
 		const gnosisUrl = `${this.rpcURL}/api/v1/safes/${this.safeAddress}/balances/usd`
 		const response = await axios.get(gnosisUrl)
@@ -267,38 +254,38 @@ export class gnosis implements SafeInterface {
 			tokensFetched.filter((token: any) => token.token).map((token: any) => {
 				console.log('token', token)
 				let tokenUSDRate = 0;
-				if(token.token.symbol === 'cUSD') {
+				if (token.token.symbol === 'cUSD') {
 					tokenUSDRate = celoTokensUSDRateMapping['celo-dollar'].usd
-				} else if(token.token.symbol === 'CELO') {
+				} else if (token.token.symbol === 'CELO') {
 					tokenUSDRate = celoTokensUSDRateMapping['celo'].usd
-				} else if(token.token.symbol === 'cEURO') {
+				} else if (token.token.symbol === 'cEURO') {
 					tokenUSDRate = celoTokensUSDRateMapping['celo-euro'].usd
-				} else if(token.token.symbol === 'tether') {
+				} else if (token.token.symbol === 'tether') {
 					token = celoTokensUSDRateMapping['tether'].usd
-				} else if(token.token.symbol === 'spcusd') {
+				} else if (token.token.symbol === 'spcusd') {
 					tokenUSDRate = 0
-				} else if(token.token.symbol === 'spCELO') {
+				} else if (token.token.symbol === 'spCELO') {
 					tokenUSDRate = 0
 				}
 				const tokenBalance = (ethers.utils.formatUnits(token.balance, token.token.decimals)).toString()
-				const tokenUSDBalance = parseFloat(token.fiatBalance) > 0 ? parseFloat(token.fiatBalance) : parseFloat(tokenBalance)*tokenUSDRate
+				const tokenUSDBalance = parseFloat(token.fiatBalance) > 0 ? parseFloat(token.fiatBalance) : parseFloat(tokenBalance) * tokenUSDRate
 				tokenList.push({
 					tokenIcon: token.token.logoUri,
 					tokenName: token.token.symbol,
 					tokenValueAmount: tokenBalance,
 					usdValueAmount: tokenUSDBalance,
 					mintAddress: '',
-					fiatConversion: parseFloat(token.fiatConversion) > 0  ? token.fiatConversion : tokenUSDRate,
+					fiatConversion: parseFloat(token.fiatConversion) > 0 ? token.fiatConversion : tokenUSDRate,
 					info: {
 						decimals: token.token.decimals,
 						tokenAddress: token.tokenAddress,
-						fiatConversion: !token.fiatConversion && token.fiatConversion === 0  ? tokenUSDRate : token.fiatConversion
+						fiatConversion: !token.fiatConversion && token.fiatConversion === 0 ? tokenUSDRate : token.fiatConversion
 					},
 				})
 			})
 		);
 		console.log('tokenList', tokenList)
-		return {value: tokenList};
+		return { value: tokenList };
 	}
 
 	getNextSteps(): string[] {
