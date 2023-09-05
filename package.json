@@ -28,7 +28,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "tonweb": "^0.0.58",
-    "wagmi": "^0.6.5"
+    "wagmi": "^0.6.5",
+    "web3": "^4.1.1"
   },
   "devDependencies": {
     "@types/jest": "^29.2.2",

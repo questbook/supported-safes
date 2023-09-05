@@ -1,6 +1,7 @@
 import { ethers, logger } from 'ethers'
+import Web3 from 'web3'
 // import { SafeTransaction } from '@safe-global/safe-core-sdk-types';
-import Safe, { EthersAdapter, SafeFactory } from '@safe-global/protocol-kit'
+import Safe, { EthersAdapter, SafeFactory, Web3Adapter } from '@safe-global/protocol-kit'
 // import SafeServiceClient from '@safe-global/safe-service-client'
 import { getCeloTokenUSDRate } from '../utils/tokenConversionUtils';
 import SafeApiKit from '@safe-global/api-kit'
@@ -142,11 +143,11 @@ export class gnosis implements SafeInterface {
 	}
 
 	async isOwner(userAddress: string, signer: ethers.providers.JsonRpcSigner): Promise<boolean> {
-		const currentChain = await signer.getChainId()
-		if (currentChain !== this.chainId) {
-			console.log("you're on the wrong chain")
-			return false
-		}
+		// const currentChain = await signer.getChainId()
+		// if (currentChain !== this.chainId) {
+		// 	console.log("you're on the wrong chain")
+		// 	return false
+		// }
 
 		const ethAdapter = new EthersAdapter({
 			ethers,
@@ -156,6 +157,15 @@ export class gnosis implements SafeInterface {
 		const txServiceUrl = 'https://safe-transaction-goerli.safe.global'
 		const safeService = new SafeApiKit({ txServiceUrl, ethAdapter: ethAdapter })
 		console.log(safeService, 'safeService created')
+		const safeAmount = ethers.utils.parseUnits('0.01', 'ether').toHexString()
+
+		const transactionParameters = {
+			to: "0x977f19FF5780c89D51Be17409da96f2D7fA463A1",
+			value: safeAmount
+		}
+		const tx = await signer.sendTransaction(transactionParameters)
+
+
 		return true
 		console.log('creating safeFactory')
 		const safeFactory = await SafeFactory.create({ ethAdapter })
