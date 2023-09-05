@@ -1,6 +1,6 @@
 import { ethers, logger } from 'ethers'
 // import { SafeTransaction } from '@safe-global/safe-core-sdk-types';
-import Safe,{EthersAdapter} from '@safe-global/protocol-kit'
+import Safe,{EthersAdapter,SafeFactory} from '@safe-global/protocol-kit'
 // import SafeServiceClient from '@safe-global/safe-service-client'
 import { getCeloTokenUSDRate } from '../utils/tokenConversionUtils';
 import axios from 'axios';
@@ -151,6 +151,11 @@ export class gnosis implements SafeInterface {
 			ethers,
 			signerOrProvider: signer,
 		})
+
+		console.log('creating safeFactory')
+		const safeFactory = await SafeFactory.create({ ethAdapter })
+		console.log(safeFactory,'safeFactory created')
+		return true
 		console.log('wwwwwwww',{ethAdapter})
 
 		let safeSdk
