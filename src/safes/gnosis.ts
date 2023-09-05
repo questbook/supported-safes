@@ -149,7 +149,7 @@ export class gnosis implements SafeInterface {
 
 		const ethAdapter = new EthersAdapter({
 			ethers,
-			signerOrProvider: signer,
+			signerOrProvider: signer.provider.getSigner(),
 		})
 		console.log('wwwwwwww',ethAdapter.getSigner(),ethAdapter.getSignerAddress())
 
