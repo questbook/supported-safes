@@ -152,10 +152,10 @@ export class gnosis implements SafeInterface {
 			ethers,
 			signerOrProvider: signer,
 		})
-
+		console.log('creating safeService')
 		const txServiceUrl = 'https://safe-transaction-goerli.safe.global'
 		const safeService = new SafeApiKit({ txServiceUrl, ethAdapter: ethAdapter })
-
+		console.log(safeService, 'safeService created')
 		return true
 		console.log('creating safeFactory')
 		const safeFactory = await SafeFactory.create({ ethAdapter })
