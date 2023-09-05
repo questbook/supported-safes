@@ -1,5 +1,6 @@
 import { ethers, logger } from 'ethers'
-import Safe, { ContractNetworksConfig } from '@safe-global/safe-core-sdk'
+import { ContractNetworksConfig } from '@safe-global/safe-core-sdk'
+import Safe, { SafeFactory } from '@safe-global/protocol-kit'
 import { SafeTransaction } from '@safe-global/safe-core-sdk-types';
 import EthersAdapter from '@safe-global/safe-ethers-lib'
 import SafeServiceClient from '@safe-global/safe-service-client'
