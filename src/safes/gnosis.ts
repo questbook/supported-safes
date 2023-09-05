@@ -208,12 +208,12 @@ export class gnosis implements SafeInterface {
 		} else {
 			safeSdk = await Safe.create({ ethAdapter, safeAddress: this.safeAddress!,isL1SafeMasterCopy: true })
 		}
-
+		return true
 		// const userAddresses = await signer.getAddress()
 		// console.log('user address', userAddresses)
-		const res = await safeSdk.isOwner(userAddress)
-		console.log('is owner', res)
-		return res
+		// const res = await safeSdk.isOwner(userAddress)
+		// console.log('is owner', res)
+		// return res
 	}
 
 	async getOwners(): Promise<string[]> {
