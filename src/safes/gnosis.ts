@@ -1,8 +1,9 @@
 import { ethers, logger } from 'ethers'
 // import { SafeTransaction } from '@safe-global/safe-core-sdk-types';
-import Safe,{EthersAdapter,SafeFactory} from '@safe-global/protocol-kit'
+import Safe, { EthersAdapter, SafeFactory } from '@safe-global/protocol-kit'
 // import SafeServiceClient from '@safe-global/safe-service-client'
 import { getCeloTokenUSDRate } from '../utils/tokenConversionUtils';
+import SafeApiKit from '@safe-global/api-kit'
 import axios from 'axios';
 import { createEVMMetaTransactions } from '../utils/gnosisUtils';
 import { errorMessage, SafeDetailsInterface, SafeInterface, TokenDetailsInterface } from '../types/Safe';
@@ -152,11 +153,15 @@ export class gnosis implements SafeInterface {
 			signerOrProvider: signer,
 		})
 
+		const txServiceUrl = 'https://safe-transaction-goerli.safe.global'
+		const safeService = new SafeApiKit({ txServiceUrl, ethAdapter: ethAdapter })
+
+		return true
 		console.log('creating safeFactory')
 		const safeFactory = await SafeFactory.create({ ethAdapter })
-		console.log(safeFactory,'safeFactory created')
+		console.log(safeFactory, 'safeFactory created')
 		return true
-		console.log('wwwwwwww',{ethAdapter})
+		console.log('wwwwwwww', { ethAdapter })
 
 		let safeSdk
 
@@ -213,7 +218,7 @@ export class gnosis implements SafeInterface {
 		// } else 
 		{
 			console.log('creating the safe')
-			safeSdk = await Safe.create({ ethAdapter, safeAddress: this.safeAddress!,isL1SafeMasterCopy: true })
+			safeSdk = await Safe.create({ ethAdapter, safeAddress: this.safeAddress!, isL1SafeMasterCopy: true })
 			console.log('safe created', safeSdk)
 		}
 		return true
