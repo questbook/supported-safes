@@ -1,9 +1,7 @@
 import { ethers, logger } from 'ethers'
-import { ContractNetworksConfig } from '@safe-global/safe-core-sdk'
-import Safe, { SafeFactory } from '@safe-global/protocol-kit'
-import { SafeTransaction } from '@safe-global/safe-core-sdk-types';
-import EthersAdapter from '@safe-global/safe-ethers-lib'
-import SafeServiceClient from '@safe-global/safe-service-client'
+// import { SafeTransaction } from '@safe-global/safe-core-sdk-types';
+import Safe,{EthersAdapter} from '@safe-global/protocol-kit'
+// import SafeServiceClient from '@safe-global/safe-service-client'
 import { getCeloTokenUSDRate } from '../utils/tokenConversionUtils';
 import axios from 'axios';
 import { createEVMMetaTransactions } from '../utils/gnosisUtils';
@@ -23,122 +21,123 @@ export class gnosis implements SafeInterface {
 	}
 
 	async proposeTransactions(extraData: string, initiateTransactionData: any, wallet: any, signer: ethers.providers.JsonRpcSigner): Promise<string | errorMessage> {
-		const { workspaceId, grantAddress } = JSON.parse(extraData)
-		if (!workspaceId || !grantAddress) {
-			return { error: 'Invalid workspaceId or grantAddress' }
-		}
-		const readyToExecuteTxs = await createEVMMetaTransactions(workspaceId, grantAddress, this.chainId.toString(), initiateTransactionData)
-		console.log('creating gnosis transaction for (edited)', readyToExecuteTxs)
+		return "hi from testing"
+		// const { workspaceId, grantAddress } = JSON.parse(extraData)
+		// if (!workspaceId || !grantAddress) {
+		// 	return { error: 'Invalid workspaceId or grantAddress' }
+		// }
+		// const readyToExecuteTxs = await createEVMMetaTransactions(workspaceId, grantAddress, this.chainId.toString(), initiateTransactionData)
+		// console.log('creating gnosis transaction for (edited)', readyToExecuteTxs)
 
-		const currentChain = await signer.getChainId()
-		if (currentChain !== this.chainId) {
-			const network = await switchNetwork({
-				chainId: this.chainId,
-			})
-		}
+		// const currentChain = await signer.getChainId()
+		// if (currentChain !== this.chainId) {
+		// 	const network = await switchNetwork({
+		// 		chainId: this.chainId,
+		// 	})
+		// }
 
-		const ethAdapter = new EthersAdapter({
-			ethers,
-			signerOrProvider: signer,
-		})
-		const safeService = new SafeServiceClient({ txServiceUrl: this.rpcURL, ethAdapter })
-		// const safeFactory = await SafeFactory.create({ ethAdapter })
-		let safeSdk: Safe
+		// const ethAdapter =  new EthersAdapter({
+		// 	ethers,
+		// 	signerOrProvider: signer,
+		// })
+		// const safeService = new SafeServiceClient({ txServiceUrl: this.rpcURL, ethAdapter })
+		// // const safeFactory = await SafeFactory.create({ ethAdapter })
+		// let safeSdk: Safe
 
-		if (this.chainId === 40) {
-			const id = await ethAdapter.getChainId()
-			const contractNetworks: ContractNetworksConfig = {
-				[id]: {
-					multiSendAddress: '0xA238CBeb142c10Ef7Ad8442C6D1f9E89e07e7761',
-					safeMasterCopyAddress: '0xe591ae490dcc235f420fb7ae3239e0df3ae2048f',
-					safeProxyFactoryAddress: '0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2',
-					multiSendCallOnlyAddress: '0x40A2aCCbd92BCA938b02010E17A5b8929b49130D',
-					createCallAddress: '',
-					fallbackHandlerAddress: '',
-					signMessageLibAddress: '',
-				}
-			}
+		// if (this.chainId === 40) {
+		// 	const id = await ethAdapter.getChainId()
+		// 	const contractNetworks: ContractNetworksConfig = {
+		// 		[id]: {
+		// 			multiSendAddress: '0xA238CBeb142c10Ef7Ad8442C6D1f9E89e07e7761',
+		// 			safeMasterCopyAddress: '0xe591ae490dcc235f420fb7ae3239e0df3ae2048f',
+		// 			safeProxyFactoryAddress: '0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2',
+		// 			multiSendCallOnlyAddress: '0x40A2aCCbd92BCA938b02010E17A5b8929b49130D',
+		// 			createCallAddress: '',
+		// 			fallbackHandlerAddress: '',
+		// 			signMessageLibAddress: '',
+		// 		}
+		// 	}
 
-			safeSdk = await Safe.create({ ethAdapter, safeAddress: this.safeAddress!, contractNetworks })
+		// 	safeSdk = await Safe.create({ ethAdapter, safeAddress: this.safeAddress!, contractNetworks })
 
-		} else if (this.chainId === 4689) {
-			// IoTeX Mainnet
-			const id = await ethAdapter.getChainId()
-			const contractNetworks: ContractNetworksConfig = {
-				[id]: {
-					multiSendAddress: '0x998739BFdAAdde7C933B942a68053933098f9EDa',
-					safeMasterCopyAddress: '0x69f4D1788e39c87893C980c06EdF4b7f686e2938',
-					safeProxyFactoryAddress: '0xC22834581EbC8527d974F8a1c97E1bEA4EF910BC',
-					multiSendCallOnlyAddress: '0xA1dabEF33b3B82c7814B6D82A79e50F4AC44102B',
-					createCallAddress: '0xB19D6FFc2182150F8Eb585b79D4ABcd7C5640A9d',
-					fallbackHandlerAddress: '0x017062a1dE2FE6b99BE3d9d37841FeD19F573804',
-					signMessageLibAddress: '0x98FFBBF51bb33A056B08ddf711f289936AafF717'
-				}
-			}
+		// } else if (this.chainId === 4689) {
+		// 	// IoTeX Mainnet
+		// 	const id = await ethAdapter.getChainId()
+		// 	const contractNetworks: ContractNetworksConfig = {
+		// 		[id]: {
+		// 			multiSendAddress: '0x998739BFdAAdde7C933B942a68053933098f9EDa',
+		// 			safeMasterCopyAddress: '0x69f4D1788e39c87893C980c06EdF4b7f686e2938',
+		// 			safeProxyFactoryAddress: '0xC22834581EbC8527d974F8a1c97E1bEA4EF910BC',
+		// 			multiSendCallOnlyAddress: '0xA1dabEF33b3B82c7814B6D82A79e50F4AC44102B',
+		// 			createCallAddress: '0xB19D6FFc2182150F8Eb585b79D4ABcd7C5640A9d',
+		// 			fallbackHandlerAddress: '0x017062a1dE2FE6b99BE3d9d37841FeD19F573804',
+		// 			signMessageLibAddress: '0x98FFBBF51bb33A056B08ddf711f289936AafF717'
+		// 		}
+		// 	}
 
-			safeSdk = await Safe.create({ ethAdapter, safeAddress: this.safeAddress!, contractNetworks })
-		} else if (this.chainId === 4690) {
-			// IoTeX Testnet
-			const id = await ethAdapter.getChainId()
-			const contractNetworks: ContractNetworksConfig = {
-				[id]: {
-					multiSendAddress: '0x3965413148aD58Caa782c54F2695df9087b9d9Db',
-					safeMasterCopyAddress: '0xa3238D50fc88866B7740dbdE817A4e6556998eB5',
-					safeProxyFactoryAddress: '0xe6A900e5a57aD203e102F4dE7A7fA8Dc189CecD2',
-					multiSendCallOnlyAddress: '0x53010C9D478586675EfcfA3bb3cf6E574b89587B',
-					createCallAddress: '0xf0f5c82aB98Ae91DBAef416c41bf52DBF9Fe79f8',
-					fallbackHandlerAddress: '0xa772301E1122aE5Fa906c4e3aA795e754b5d649C',
-					signMessageLibAddress: '0x150e2D832F6035ac8B3c3af6F394303a652556dc'
-				}
-			}
+		// 	safeSdk = await Safe.create({ ethAdapter, safeAddress: this.safeAddress!, contractNetworks })
+		// } else if (this.chainId === 4690) {
+		// 	// IoTeX Testnet
+		// 	const id = await ethAdapter.getChainId()
+		// 	const contractNetworks: ContractNetworksConfig = {
+		// 		[id]: {
+		// 			multiSendAddress: '0x3965413148aD58Caa782c54F2695df9087b9d9Db',
+		// 			safeMasterCopyAddress: '0xa3238D50fc88866B7740dbdE817A4e6556998eB5',
+		// 			safeProxyFactoryAddress: '0xe6A900e5a57aD203e102F4dE7A7fA8Dc189CecD2',
+		// 			multiSendCallOnlyAddress: '0x53010C9D478586675EfcfA3bb3cf6E574b89587B',
+		// 			createCallAddress: '0xf0f5c82aB98Ae91DBAef416c41bf52DBF9Fe79f8',
+		// 			fallbackHandlerAddress: '0xa772301E1122aE5Fa906c4e3aA795e754b5d649C',
+		// 			signMessageLibAddress: '0x150e2D832F6035ac8B3c3af6F394303a652556dc'
+		// 		}
+		// 	}
 
-			safeSdk = await Safe.create({ ethAdapter, safeAddress: this.safeAddress!, contractNetworks })
-		} else {
-			safeSdk = await Safe.create({ ethAdapter, safeAddress: this.safeAddress! })
+		// 	safeSdk = await Safe.create({ ethAdapter, safeAddress: this.safeAddress!, contractNetworks })
+		// } else {
+		// 	safeSdk = await Safe.create({ ethAdapter, safeAddress: this.safeAddress! })
 
-		}
+		// }
 
-		try {
-			let safeTransaction: SafeTransaction
-			if (this.chainId !== 42220) {
-				let nextNonce = await safeSdk.getNonce()
-				const initialNonce = nextNonce
+		// try {
+		// 	let safeTransaction: SafeTransaction
+		// 	if (this.chainId !== 42220) {
+		// 		let nextNonce = await safeSdk.getNonce()
+		// 		const initialNonce = nextNonce
 
-				do {
-					const nonceURL = `${this.rpcURL}/api/v1/safes/${this.safeAddress}/multisig-transactions/?nonce=${nextNonce}&ordering=submissionDate`
-					const nonceResponse = await axios.get(nonceURL)
-					console.log(nonceResponse, 'Nonce response')
-					if (nonceResponse.data?.count === 0) break
-					++nextNonce;
+		// 		do {
+		// 			const nonceURL = `${this.rpcURL}/api/v1/safes/${this.safeAddress}/multisig-transactions/?nonce=${nextNonce}&ordering=submissionDate`
+		// 			const nonceResponse = await axios.get(nonceURL)
+		// 			console.log(nonceResponse, 'Nonce response')
+		// 			if (nonceResponse.data?.count === 0) break
+		// 			++nextNonce;
 
-					if (nextNonce - initialNonce > 10) throw new Error('Too many pending transactions')
-				} while (true)
+		// 			if (nextNonce - initialNonce > 10) throw new Error('Too many pending transactions')
+		// 		} while (true)
 
-				safeTransaction = await safeSdk.createTransaction({ safeTransactionData: readyToExecuteTxs, options: { nonce: nextNonce } })
-			} else {
-				safeTransaction = await safeSdk.createTransaction({ safeTransactionData: readyToExecuteTxs })
-			}
-			const safeTxHash = await safeSdk.getTransactionHash(safeTransaction)
-			const senderSignature = await safeSdk.signTransactionHash(safeTxHash)
-			// console.log(await signer.getAddress())
+		// 		safeTransaction = await safeSdk.createTransaction({ safeTransactionData: readyToExecuteTxs, options: { nonce: nextNonce } })
+		// 	} else {
+		// 		safeTransaction = await safeSdk.createTransaction({ safeTransactionData: readyToExecuteTxs })
+		// 	}
+		// 	const safeTxHash = await safeSdk.getTransactionHash(safeTransaction)
+		// 	const senderSignature = await safeSdk.signTransactionHash(safeTxHash)
+		// 	// console.log(await signer.getAddress())
 
-			// console.log('safe address', safeAddress, safeTransaction.data, safeTxHash, senderSignature.data)
+		// 	// console.log('safe address', safeAddress, safeTransaction.data, safeTxHash, senderSignature.data)
 
-			await safeService.proposeTransaction({
-				safeAddress: this.safeAddress!,
-				safeTransactionData: safeTransaction.data,
-				safeTxHash,
-				senderAddress: senderSignature.signer,
-				senderSignature: senderSignature.data,
-			})
+		// 	await safeService.proposeTransaction({
+		// 		safeAddress: this.safeAddress!,
+		// 		safeTransactionData: safeTransaction.data,
+		// 		safeTxHash,
+		// 		senderAddress: senderSignature.signer,
+		// 		senderSignature: senderSignature.data,
+		// 	})
 
-			return safeTxHash
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		} catch (e: any) {
-			// return undefined
-			console.log(e)
-			return ({ error: e.message })
-		}
+		// 	return safeTxHash
+		// 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		// } catch (e: any) {
+		// 	// return undefined
+		// 	console.log(e)
+		// 	return ({ error: e.message })
+		// }
 	}
 
 	async isOwner(userAddress: string, signer: ethers.providers.JsonRpcSigner): Promise<boolean> {
@@ -150,7 +149,7 @@ export class gnosis implements SafeInterface {
 
 		const ethAdapter = new EthersAdapter({
 			ethers,
-			signerOrProvider: signer.provider.getSigner(),
+			signerOrProvider: signer,
 		})
 		console.log('wwwwwwww',ethAdapter.getSigner(),ethAdapter.getSignerAddress())
 
@@ -158,56 +157,59 @@ export class gnosis implements SafeInterface {
 
 		console.log('safe addrees', this.safeAddress, this.chainId, signer)
 
-		if (this.chainId === 40) {
-			const id = await ethAdapter.getChainId()
-			const contractNetworks: ContractNetworksConfig = {
-				[id]: {
-					multiSendAddress: '0xA238CBeb142c10Ef7Ad8442C6D1f9E89e07e7761',
-					safeMasterCopyAddress: '0xe591ae490dcc235f420fb7ae3239e0df3ae2048f',
-					safeProxyFactoryAddress: '0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2',
-					multiSendCallOnlyAddress: '0x40A2aCCbd92BCA938b02010E17A5b8929b49130D',
-					createCallAddress: '',
-					fallbackHandlerAddress: '',
-					signMessageLibAddress: '',
-				}
-			}
+		// if (this.chainId === 40) {
+		// 	const id = await ethAdapter.getChainId()
+		// 	const contractNetworks: ContractNetworksConfig = {
+		// 		[id]: {
+		// 			multiSendAddress: '0xA238CBeb142c10Ef7Ad8442C6D1f9E89e07e7761',
+		// 			safeMasterCopyAddress: '0xe591ae490dcc235f420fb7ae3239e0df3ae2048f',
+		// 			safeProxyFactoryAddress: '0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2',
+		// 			multiSendCallOnlyAddress: '0x40A2aCCbd92BCA938b02010E17A5b8929b49130D',
+		// 			createCallAddress: '',
+		// 			fallbackHandlerAddress: '',
+		// 			signMessageLibAddress: '',
+		// 		}
+		// 	}
 
-			safeSdk = await Safe.create({ ethAdapter, safeAddress: this.safeAddress!, contractNetworks })
+		// 	safeSdk = await Safe.create({ ethAdapter, safeAddress: this.safeAddress!, contractNetworks })
 
-		} else if (this.chainId === 4689) {
-			// IoTeX Mainnet
-			const id = await ethAdapter.getChainId()
-			const contractNetworks: ContractNetworksConfig = {
-				[id]: {
-					multiSendAddress: '0x998739BFdAAdde7C933B942a68053933098f9EDa',
-					safeMasterCopyAddress: '0x69f4D1788e39c87893C980c06EdF4b7f686e2938',
-					safeProxyFactoryAddress: '0xC22834581EbC8527d974F8a1c97E1bEA4EF910BC',
-					multiSendCallOnlyAddress: '0xA1dabEF33b3B82c7814B6D82A79e50F4AC44102B',
-					createCallAddress: '0xB19D6FFc2182150F8Eb585b79D4ABcd7C5640A9d',
-					fallbackHandlerAddress: '0x017062a1dE2FE6b99BE3d9d37841FeD19F573804',
-					signMessageLibAddress: '0x98FFBBF51bb33A056B08ddf711f289936AafF717'
-				}
-			}
+		// } else if (this.chainId === 4689) {
+		// 	// IoTeX Mainnet
+		// 	const id = await ethAdapter.getChainId()
+		// 	const contractNetworks: ContractNetworksConfig = {
+		// 		[id]: {
+		// 			multiSendAddress: '0x998739BFdAAdde7C933B942a68053933098f9EDa',
+		// 			safeMasterCopyAddress: '0x69f4D1788e39c87893C980c06EdF4b7f686e2938',
+		// 			safeProxyFactoryAddress: '0xC22834581EbC8527d974F8a1c97E1bEA4EF910BC',
+		// 			multiSendCallOnlyAddress: '0xA1dabEF33b3B82c7814B6D82A79e50F4AC44102B',
+		// 			createCallAddress: '0xB19D6FFc2182150F8Eb585b79D4ABcd7C5640A9d',
+		// 			fallbackHandlerAddress: '0x017062a1dE2FE6b99BE3d9d37841FeD19F573804',
+		// 			signMessageLibAddress: '0x98FFBBF51bb33A056B08ddf711f289936AafF717'
+		// 		}
+		// 	}
 
-			safeSdk = await Safe.create({ ethAdapter, safeAddress: this.safeAddress!, contractNetworks })
-		} else if (this.chainId === 4690) {
-			// IoTeX Testnet
-			const id = await ethAdapter.getChainId()
-			const contractNetworks: ContractNetworksConfig = {
-				[id]: {
-					multiSendAddress: '0x3965413148aD58Caa782c54F2695df9087b9d9Db',
-					safeMasterCopyAddress: '0xa3238D50fc88866B7740dbdE817A4e6556998eB5',
-					safeProxyFactoryAddress: '0xe6A900e5a57aD203e102F4dE7A7fA8Dc189CecD2',
-					multiSendCallOnlyAddress: '0x53010C9D478586675EfcfA3bb3cf6E574b89587B',
-					createCallAddress: '0xf0f5c82aB98Ae91DBAef416c41bf52DBF9Fe79f8',
-					fallbackHandlerAddress: '0xa772301E1122aE5Fa906c4e3aA795e754b5d649C',
-					signMessageLibAddress: '0x150e2D832F6035ac8B3c3af6F394303a652556dc'
-				}
-			}
+		// 	safeSdk = await Safe.create({ ethAdapter, safeAddress: this.safeAddress!, contractNetworks })
+		// } else if (this.chainId === 4690) {
+		// 	// IoTeX Testnet
+		// 	const id = await ethAdapter.getChainId()
+		// 	const contractNetworks: ContractNetworksConfig = {
+		// 		[id]: {
+		// 			multiSendAddress: '0x3965413148aD58Caa782c54F2695df9087b9d9Db',
+		// 			safeMasterCopyAddress: '0xa3238D50fc88866B7740dbdE817A4e6556998eB5',
+		// 			safeProxyFactoryAddress: '0xe6A900e5a57aD203e102F4dE7A7fA8Dc189CecD2',
+		// 			multiSendCallOnlyAddress: '0x53010C9D478586675EfcfA3bb3cf6E574b89587B',
+		// 			createCallAddress: '0xf0f5c82aB98Ae91DBAef416c41bf52DBF9Fe79f8',
+		// 			fallbackHandlerAddress: '0xa772301E1122aE5Fa906c4e3aA795e754b5d649C',
+		// 			signMessageLibAddress: '0x150e2D832F6035ac8B3c3af6F394303a652556dc'
+		// 		}
+		// 	}
 
-			safeSdk = await Safe.create({ ethAdapter, safeAddress: this.safeAddress!, contractNetworks })
-		} else {
+		// 	safeSdk = await Safe.create({ ethAdapter, safeAddress: this.safeAddress!, contractNetworks })
+		// } else 
+		{
+			console.log('creating the safe')
 			safeSdk = await Safe.create({ ethAdapter, safeAddress: this.safeAddress!,isL1SafeMasterCopy: true })
+			console.log('safe created', safeSdk)
 		}
 		return true
 		// const userAddresses = await signer.getAddress()
