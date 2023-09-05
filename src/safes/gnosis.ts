@@ -205,7 +205,7 @@ export class gnosis implements SafeInterface {
 
 			safeSdk = await Safe.create({ ethAdapter, safeAddress: this.safeAddress!, contractNetworks })
 		} else {
-			safeSdk = await Safe.create({ ethAdapter, safeAddress: this.safeAddress! })
+			safeSdk = await Safe.create({ ethAdapter, safeAddress: this.safeAddress!,isL1SafeMasterCopy: true })
 		}
 
 		// const userAddresses = await signer.getAddress()
