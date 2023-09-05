@@ -151,6 +151,7 @@ export class gnosis implements SafeInterface {
 			ethers,
 			signerOrProvider: signer,
 		})
+		console.log('wwwwwwww',ethAdapter.getSigner(),ethAdapter.getSignerAddress())
 
 		let safeSdk
 
