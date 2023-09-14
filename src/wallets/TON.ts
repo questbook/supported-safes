@@ -1,5 +1,7 @@
 import TonWeb from 'tonweb'
 import { sleep } from '../utils/general'
+import { TokenDetailsInterface } from '../types/Safe'
+import { getTokenUSDonDate } from '../utils/tokenConversionUtils'
 
 export class TonWallet {
 	name: string = 'TON Wallet'
@@ -8,6 +10,7 @@ export class TonWallet {
 	provider: any
 	tonReady: boolean = false
 	address: string = ''
+	TONTokenId: string = 'the-open-network'
 
 	constructor(isTestnet: boolean = false) {
 		this.provider = null
@@ -115,5 +118,23 @@ export class TonWallet {
 			console.log(error)
 			callback({ error: error.message })
 		}
+	}
+	getToken = async () =>{
+		let list: TokenDetailsInterface
+
+        const currentTime = (new Date()).toLocaleDateString().split('/').join('-')
+
+        const tonUsdRate = await getTokenUSDonDate(this.TONTokenId, currentTime)
+        list = {
+            tokenIcon: '/v2/icons/toncoin.svg',
+            tokenName: 'TON',
+            tokenValueAmount: undefined,
+            usdValueAmount: 0,
+            mintAddress: undefined,
+            info: undefined,
+            fiatConversion: tonUsdRate,
+            symbol: 'TON'
+        }
+        return list
 	}
 }

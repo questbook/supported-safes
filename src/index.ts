@@ -15,9 +15,7 @@ export class SupportedPayouts {
     }
     
     async getSafeByAddress(address: string, callback: (value: SafeDetailsInterface[])=>void) {
-        console.log('new version v1.0.4  ')
         const CHAIN_IDS = Object.keys(SupportedSafesInfo);
-
         const safes = await Promise.all(CHAIN_IDS.map(async (chainId) => {
             const safeInfo: {name: string, chainId: number, rpcURL: string, class: typeof EthereumMainnet | typeof SolanaMainnet | typeof TonKeyMainnet} = SupportedSafesInfo[chainId];
             console.log(safeInfo, chainId)
