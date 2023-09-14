@@ -43,12 +43,16 @@ export class TonWallet {
 				const tonWeb = new TonWeb(isTestnet ? new TonWeb.HttpProvider('https://testnet.toncenter.com/api/v2/jsonRPC') : new TonWeb.HttpProvider('https://toncenter.com/api/v2/jsonRPC'))
 				const wallet = tonWeb.wallet.create({ address: this.address })
 				console.log(wallet.methods.seqno)
+				try{
 				const lastTx = (await this.provider.getTransactions(this.address, 2))[0]
+				console.log(lastTx,'lastTx')
+				} catch(e){
+				}
 
-				console.log('TON lastTx', lastTx)
-				const lastTxHash = lastTx.transaction_id.hash
+				// console.log('TON lastTx', lastTx)
+				// const lastTxHash = lastTx.transaction_id.hash
 
-				console.log('TON lastTxHash', lastTxHash)
+				// console.log('TON lastTxHash', lastTxHash)
 				await sleep(1000)
 
 				const result = await this.provider.send(
@@ -76,7 +80,7 @@ export class TonWallet {
 					// 	console.log('TON seqno', seqno)
 					// 	if(seqno > prevSeqno) {
 					// 		await sleep(1000)
-					// 		const transactions = await tonWeb.getTransactions(this.address, 5, undefined, undefined, undefined)
+							// const transactions = await tonWeb.getTransactions(this.address, 5, undefined, undefined, undefined)
 					// 		console.log('TON transactions after transaction', transactions)
 					// 		let transactionHash = ''
 					// 		for(let i = 0; i < transactions.length; i++){
@@ -90,16 +94,16 @@ export class TonWallet {
 					// 		callback({transactionHash})
 					// 	}
 					// }, 2000)
-					let txHash = lastTxHash
-					let tx = lastTx
+					// let txHash = lastTxHash
+					// let tx = lastTx
 
-					while (txHash == lastTxHash && tx?.in_msg?.message === "questbook TON payout") {
-						await sleep(1500) // some delay between API calls
-						tx = (await this.provider.getTransactions(this.address, 1,undefined, undefined, undefined))[0]
-						txHash = tx.transaction_id.hash
-					}
-					console.log('TON txHash', txHash)
-					callback({ transactionHash: txHash })
+					// while (txHash == lastTxHash && tx?.in_msg?.message === "questbook TON payout") {
+					// 	await sleep(1500) // some delay between API calls
+					// 	tx = (await this.provider.getTransactions(this.address, 1,undefined, undefined, undefined))[0]
+					// 	txHash = tx.transaction_id.hash
+					// }
+					// console.log('TON txHash', txHash)
+					callback({ transactionHash: "dfdfd" })
 
 				} else {
 					callback({ error: 'Transaction failed' })
