@@ -44,9 +44,11 @@ export class TonWallet {
 				const wallet = tonWeb.wallet.create({ address: this.address })
 				console.log(wallet.methods.seqno)
 				const lastTx = (await tonWeb.getTransactions(this.address, 1))[0]
+
+				console.log('TON lastTx', lastTx)
 				const lastTxHash = lastTx.transaction_id.hash
 
-				console.log('TON lastTx', lastTx, lastTxHash)
+				console.log('TON lastTxHash', lastTxHash)
 				await sleep(1000)
 
 				const result = await this.provider.send(
