@@ -21,14 +21,18 @@ export class gnosis implements SafeInterface {
 		this.safeAddress = ethers.utils.getAddress(safeAddress)
 	}
 
-	async proposeTransactions(extraData: string, initiateTransactionData: any, wallet: any, signer: ethers.providers.JsonRpcSigner): Promise<string| errorMessage>  {
+	async proposeTransactions(extraData: string, initiateTransactionData: any, wallet: any): Promise<string| errorMessage>  {
 		const { workspaceId, grantAddress } = JSON.parse(extraData)
 		if (!workspaceId || !grantAddress) {
 			return {error: 'Invalid workspaceId or grantAddress'}
 		}
 		const readyToExecuteTxs = await createEVMMetaTransactions(workspaceId, grantAddress, this.chainId.toString(), initiateTransactionData)
 		console.log('creating gnosis transaction for (edited)', readyToExecuteTxs)
-		
+		//@ts-ignore
+		const provider = new ethers.providers.Web3Provider(window.ethereum)
+		await provider.send('eth_requestAccounts', [])
+
+		const signer = provider.getSigner()
 		const currentChain = await signer.getChainId()
 		if (currentChain !== this.chainId) {
 			const network = await switchNetwork({
@@ -140,7 +144,12 @@ export class gnosis implements SafeInterface {
 		}
 	}
 
-    async isOwner(userAddress: string, signer: ethers.providers.JsonRpcSigner): Promise<boolean> {
+    async isOwner(userAddress: string): Promise<boolean> {
+		//@ts-ignore
+		const provider = new ethers.providers.Web3Provider(window.ethereum)
+		await provider.send('eth_requestAccounts', [])
+
+		const signer = provider.getSigner()
 		const currentChain = await signer.getChainId()
 		if (currentChain !== this.chainId) {
 			console.log("you're on the wrong chain")
