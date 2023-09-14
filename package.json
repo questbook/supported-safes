@@ -27,7 +27,7 @@
     "ethers": "^5.7.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "tonweb": "^0.0.58",
+    "tonweb": "^0.0.62",
     "wagmi": "^0.6.5"
   },
   "devDependencies": {

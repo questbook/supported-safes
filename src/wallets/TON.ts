@@ -43,7 +43,7 @@ export class TonWallet {
 				const tonWeb = new TonWeb(isTestnet ? new TonWeb.HttpProvider('https://testnet.toncenter.com/api/v2/jsonRPC') : new TonWeb.HttpProvider('https://toncenter.com/api/v2/jsonRPC'))
 				const wallet = tonWeb.wallet.create({ address: this.address })
 				console.log(wallet.methods.seqno)
-				const lastTx = (await tonWeb.getTransactions(this.address, 1))[0]
+				const lastTx = (await tonWeb.getTransactions(this.address, 2))[0]
 
 				console.log('TON lastTx', lastTx)
 				const lastTxHash = lastTx.transaction_id.hash
@@ -95,7 +95,7 @@ export class TonWallet {
 
 					while (txHash == lastTxHash && tx?.in_msg?.message === "questbook TON payout") {
 						await sleep(1500) // some delay between API calls
-						tx = (await tonWeb.getTransactions(this.address, 1))[0]
+						tx = (await tonWeb.getTransactions(this.address, 1,undefined, undefined, undefined))[0]
 						txHash = tx.transaction_id.hash
 					}
 					console.log('TON txHash', txHash)
