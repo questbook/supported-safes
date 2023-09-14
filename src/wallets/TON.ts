@@ -45,24 +45,25 @@ export class TonWallet {
 			if (this.tonReady) {
 				const tonWeb = new TonWeb(isTestnet ? new TonWeb.HttpProvider('https://testnet.toncenter.com/api/v2/jsonRPC') : new TonWeb.HttpProvider('https://toncenter.com/api/v2/jsonRPC'))
 				const wallet = tonWeb.wallet.create({ address: this.address })
-				console.log(wallet.methods.seqno)
-				try{
-				const lastTx = (await this.provider.getTransactions(this.address, 2))[0]
-				console.log(lastTx,'lastTx')
-				} catch(e){
+
+				const nanoAmount = TonWeb.utils.toNano(amount).toString()
+
+				const currentTime = (new Date()).toLocaleDateString().split('/').join('-')
+				const TONTokenId = 'the-open-network'
+				const tonUsdRate = await getTokenUSDonDate(TONTokenId, currentTime)
+		
+				const amountInTon = (parseFloat(nanoAmount) / tonUsdRate).toFixed(0)
+				
+				if(!amountInTon){
+					throw new Error ("cannot calculate the amount")
 				}
-
-				// console.log('TON lastTx', lastTx)
-				// const lastTxHash = lastTx.transaction_id.hash
-
-				// console.log('TON lastTxHash', lastTxHash)
 				await sleep(1000)
 
 				const result = await this.provider.send(
 					'ton_sendTransaction',
 					[{
 						to: toAddress,
-						value: TonWeb.utils.toNano(amount.toString()).toNumber(),
+						value: amountInTon,
 						data: 'questbook TON payout',
 						dataType: 'text'
 					}]
