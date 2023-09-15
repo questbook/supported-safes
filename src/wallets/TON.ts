@@ -123,7 +123,7 @@ export class TonWallet {
 	getToken = async () =>{
 		let list: TokenDetailsInterface
 
-
+		
         const currentTime = (new Date()).toLocaleDateString().split('/').join('-')
 
         const tonUsdRate = await getTokenUSDonDate(this.TONTokenId, currentTime)
