@@ -46,6 +46,9 @@ export class TonWallet {
 				const tonWeb = new TonWeb(isTestnet ? new TonWeb.HttpProvider('https://testnet.toncenter.com/api/v2/jsonRPC') : new TonWeb.HttpProvider('https://toncenter.com/api/v2/jsonRPC'))
 				const wallet = tonWeb.wallet.create({ address: this.address })
 
+				console.log(wallet.methods.seqno)
+				const lastTx = (await tonWeb.getTransactions(this.address, 1))[0]
+
 				const nanoAmount = TonWeb.utils.toNano(amount.toString()).toString()
 
 				const currentTime = (new Date()).toLocaleDateString().split('/').join('-')
@@ -123,7 +126,7 @@ export class TonWallet {
 	getToken = async () =>{
 		let list: TokenDetailsInterface
 
-		
+
         const currentTime = (new Date()).toLocaleDateString().split('/').join('-')
 
         const tonUsdRate = await getTokenUSDonDate(this.TONTokenId, currentTime)
