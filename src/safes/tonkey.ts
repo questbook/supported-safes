@@ -119,6 +119,7 @@ export class tonkey implements SafeInterface {
             safeAddress: rawSafeAddr,
             recipient: recipient,
             amount: amountInTon,
+            remark:'questbook'
         };
         const response = await fetch(`${this.rpcURL}`, {
             method: "POST",
@@ -126,8 +127,8 @@ export class tonkey implements SafeInterface {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                query: `query TonTransfer($chainId: String!, $safeAddress: String!, $amount: String!, $recipient: String!) {
-                    tonTransfer(chainId: $chainId, safeAddress: $safeAddress, amount: $amount, recipient: $recipient) {
+                query: `query TonTransfer($recipient: String!, $amount: String!, $safeAddress: String!, $chainId: String!, $remark: String) {
+                    tonTransfer(recipient: $recipient, amount: $amount, safeAddress: $safeAddress, chainId: $chainId, remark: $remark) {
                       safeAddress
                       chainId
                       transfer {
