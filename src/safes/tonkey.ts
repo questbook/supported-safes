@@ -1,8 +1,7 @@
 import TonWeb from 'tonweb';
-import { PhantomProvider, SafeDetailsInterface, SafeInterface, TokenDetailsInterface, TransactionDataInterface, errorMessage } from '../types/Safe';
+import { SafeDetailsInterface, SafeInterface, TokenDetailsInterface, errorMessage } from '../types/Safe';
 import { getTokenUSDonDate } from '../utils/tokenConversionUtils';
 export const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-import { ethers } from 'ethers';
 
 export class tonkey implements SafeInterface {
     chainIdString: string
