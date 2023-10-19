@@ -20,6 +20,7 @@ export class tonkey implements SafeInterface {
     }
 
     toRawAddress(address: string): string {
+        console.log('new version is here')
         return new TonWeb.Address(address).toString(false);
     }
 
