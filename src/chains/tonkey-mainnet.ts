@@ -6,8 +6,8 @@ export class TonKeyMainnet extends tonkey {
     safeLogo: string;
 
     constructor(safeAddress: string) {
-        console.log('new version is here')
-        super(-239, 'https://v1-graphql.tonkey.app/graphql', safeAddress)
+        console.log('the new version')
+        super(-239, 'https://graphql.tonkey.app/graphql', safeAddress)
         this.chainName = 'TON Mainnet'
         this.chainLogo = 'https://github.com/trustwallet/assets/blob/master/blockchains/ton/info/logo.png'
         this.safeLogo = '/v2/icons/tonkey.svg'
