@@ -119,7 +119,7 @@ export class tonkey implements SafeInterface {
             safeAddress: rawSafeAddr,
             recipient: recipient,
             amount: amountInTon,
-            remark:'questbook'
+            remark:''
         };
         const response = await fetch(`${this.rpcURL}`, {
             method: "POST",
@@ -210,8 +210,8 @@ export class tonkey implements SafeInterface {
         });
         if (response.status === 200) {
             const result = await response.json();
-            if (result.error) {
-                console.log('Error in createTransaction: ', result.error);
+            if (result.errors) {
+                console.log('Error in createTransaction: ', result.errors);
                 throw new Error("Error in createTransaction: GraphQL API Failed");
             }
         }
