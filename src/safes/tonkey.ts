@@ -67,8 +67,8 @@ export class tonkey implements SafeInterface {
     }
 
     async isOwner(userAddress: string): Promise<boolean> {
-        if(!userAddress || userAddress === ''){
-            throw new Error ("address is empty")
+        if (!userAddress || userAddress === '') {
+            throw new Error("address is empty")
         }
         const owners = await this.getOwners()
         const userRawAddress = new TonWeb.Address(userAddress).toString(false)
@@ -99,7 +99,7 @@ export class tonkey implements SafeInterface {
         return ownerIndex
     }
 
-    async genToken(recipient: string, amount: string, wallet: any, ownerIndex: number): Promise<any> {
+    async genToken(recipient: string, amount: string, wallet: any, ownerIndex: number, remark: string): Promise<any> {
         console.log('started generating token')
         const rawSafeAddr = (this.toRawAddress(this.safeAddress))
 
@@ -110,16 +110,16 @@ export class tonkey implements SafeInterface {
         const tonUsdRate = await getTokenUSDonDate(TONTokenId, currentTime)
 
         const amountInTon = (parseFloat(nanoAmount) / tonUsdRate).toFixed(0)
-        
-        if(!amountInTon){
-            throw new Error ("cannot calculate the amount")
+
+        if (!amountInTon) {
+            throw new Error("cannot calculate the amount")
         }
         const reqVar = {
             chainId: this.chainIdString,
             safeAddress: rawSafeAddr,
             recipient: recipient,
             amount: amountInTon,
-            remark:''
+            remark
         };
         const response = await fetch(`${this.rpcURL}`, {
             method: "POST",
@@ -150,6 +150,7 @@ export class tonkey implements SafeInterface {
                         confirmationsSubmitted
                         confirmations
                         executor
+                        remark
                       }
                     }
                   }`,
@@ -186,8 +187,8 @@ export class tonkey implements SafeInterface {
 
     async createTransaction(tonTransfer: any) {
 
-        console.log('Hasan and ali',tonTransfer.transfer.transferInfo.native.value)
-        const reqVar = { content: tonTransfer };
+        console.log('Hasan and ali', tonTransfer.transfer.transferInfo.native.value)
+        const reqVar = { content: tonTransfer, remark: '' }
         const queryId = tonTransfer.multiSigExecutionInfo.queryId;
         const response = await fetch(`${this.rpcURL}`, {
             method: "POST",
@@ -216,23 +217,23 @@ export class tonkey implements SafeInterface {
             }
         }
         else {
-            throw new Error ('Error in createTransaction response status')
+            throw new Error('Error in createTransaction response status')
         }
         return queryId
     }
 
-    async proposeTransaction(recipient: string, amount: number, wallet: any): Promise<string | errorMessage> {
+    async proposeTransaction(recipient: string, amount: number, wallet: any, remark: string): Promise<string | errorMessage> {
 
         const accounts = await wallet.send('ton_requestAccounts')
 
         const account = accounts[0]
         const ownerIndex = await this.getOwnerIndex(account)
 
-        if (ownerIndex===-1) {
+        if (ownerIndex === -1) {
             throw new Error('Selected account is not an owner')
         }
 
-        const token = await this.genToken(recipient, amount.toString(), wallet,ownerIndex)
+        const token = await this.genToken(recipient, amount.toString(), wallet, ownerIndex, remark)
 
         console.log('TON signed token: ', token)
 
@@ -324,6 +325,6 @@ export class tonkey implements SafeInterface {
         else if (transactions.length > 1) {
             throw new Error('you cannot propose more than one builder/one milestone per transaction')
         }
-        return await this.proposeTransaction(transactions[0].to, transactions[0].amount, wallet)
+        return await this.proposeTransaction(transactions[0].to, transactions[0].amount, wallet, grantName)
     }
 }
