@@ -284,11 +284,11 @@ export class gnosis implements SafeInterface {
 					tokenValueAmount: tokenBalance,
 					usdValueAmount: tokenUSDBalance,
 					mintAddress: '',
-					fiatConversion: parseFloat(token.fiatConversion) > 0  ? token.fiatConversion : tokenUSDRate,
+					fiatConversion: parseFloat(token.fiatConversion) > 0  ? parseFloat(token.fiatConversion) : tokenUSDRate,
 					info: {
 						decimals: token.token.decimals,
 						tokenAddress: token.tokenAddress,
-						fiatConversion: !token.fiatConversion && token.fiatConversion === 0  ? tokenUSDRate : token.fiatConversion
+						fiatConversion: !token.fiatConversion && parseFloat(token.fiatConversion) === 0  ? tokenUSDRate : parseFloat(token.fiatConversion)
 					},
 				})
 			})
