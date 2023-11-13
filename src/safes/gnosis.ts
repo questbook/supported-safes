@@ -276,19 +276,19 @@ export class gnosis implements SafeInterface {
 				} else if(token.token.symbol === 'spCELO') {
 					tokenUSDRate = 0
 				}
-				const tokenBalance = (ethers.utils.formatUnits(token.balance, token.token.decimals)).toString()
-				const tokenUSDBalance = parseFloat(token.fiatBalance) > 0 ? parseFloat(token.fiatBalance) : parseFloat(tokenBalance)*tokenUSDRate
+				const tokenBalance = parseFloat(ethers.utils.formatUnits(token.balance, token.token.decimals))
+				const tokenUSDBalance = parseFloat(token.fiatBalance) > 0 ? parseFloat(token.fiatBalance) : tokenBalance*tokenUSDRate
 				tokenList.push({
 					tokenIcon: token.token.logoUri,
 					tokenName: token.token.symbol,
 					tokenValueAmount: tokenBalance,
 					usdValueAmount: tokenUSDBalance,
 					mintAddress: '',
-					fiatConversion: parseFloat(token.fiatConversion) > 0  ? token.fiatConversion : tokenUSDRate,
+					fiatConversion: parseFloat(token.fiatConversion) > 0  ? parseFloat(token.fiatConversion) : tokenUSDRate,
 					info: {
 						decimals: token.token.decimals,
 						tokenAddress: token.tokenAddress,
-						fiatConversion: !token.fiatConversion && token.fiatConversion === 0  ? tokenUSDRate : token.fiatConversion
+						fiatConversion: !token.fiatConversion && parseFloat(token.fiatConversion) === 0  ? tokenUSDRate : parseFloat(token.fiatConversion)
 					},
 				})
 			})
