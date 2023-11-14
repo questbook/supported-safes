@@ -255,44 +255,45 @@ export class gnosis implements SafeInterface {
 
 	async getTokenAndbalance(): Promise<{value?: TokenDetailsInterface[], error?: string}> {
 		const tokenList: any[] = []
-		const gnosisUrl = `${this.rpcURL}/api/v1/safes/${this.safeAddress}/balances/usd`
+		const gnosisUrl = `https://safe-client.safe.global/v1/chains/${this.chainId}/safes/${this.safeAddress}/balances/usd`
 		const response = await axios.get(gnosisUrl)
-		const tokensFetched = response.data
+		const tokensFetched = response.data.items
 		const celoTokensUSDRateMapping = await (await getCeloTokenUSDRate()).data;
 		Promise.all(
-			tokensFetched.filter((token: any) => token.token).map((token: any) => {
+			tokensFetched.filter((token: any) => token.tokenInfo).map((token: any) => {
 				console.log('token', token)
 				let tokenUSDRate = 0;
-				if(token.token.symbol === 'cUSD') {
+				if(token.tokenInfo.symbol === 'cUSD') {
 					tokenUSDRate = celoTokensUSDRateMapping['celo-dollar'].usd
-				} else if(token.token.symbol === 'CELO') {
+				} else if(token.tokenInfo.symbol === 'CELO') {
 					tokenUSDRate = celoTokensUSDRateMapping['celo'].usd
-				} else if(token.token.symbol === 'cEURO') {
+				} else if(token.tokenInfo.symbol === 'cEURO') {
 					tokenUSDRate = celoTokensUSDRateMapping['celo-euro'].usd
-				} else if(token.token.symbol === 'tether') {
+				} else if(token.tokenInfo.symbol === 'tether') {
 					token = celoTokensUSDRateMapping['tether'].usd
-				} else if(token.token.symbol === 'spcusd') {
+				} else if(token.tokenInfo.symbol === 'spcusd') {
 					tokenUSDRate = 0
-				} else if(token.token.symbol === 'spCELO') {
+				} else if(token.tokenInfo.symbol === 'spCELO') {
 					tokenUSDRate = 0
 				}
-				const tokenBalance = parseFloat(ethers.utils.formatUnits(token.balance, token.token.decimals))
+				const tokenBalance = parseFloat(ethers.utils.formatUnits(token.balance, token.tokenInfo.decimals))
 				const tokenUSDBalance = parseFloat(token.fiatBalance) > 0 ? parseFloat(token.fiatBalance) : tokenBalance*tokenUSDRate
 				tokenList.push({
-					tokenIcon: token.token.logoUri,
-					tokenName: token.token.symbol,
+					tokenIcon: token.tokenInfo.logoUri,
+					tokenName: token.tokenInfo.symbol,
 					tokenValueAmount: tokenBalance,
 					usdValueAmount: tokenUSDBalance,
 					mintAddress: '',
 					fiatConversion: parseFloat(token.fiatConversion) > 0  ? parseFloat(token.fiatConversion) : tokenUSDRate,
 					info: {
-						decimals: token.token.decimals,
-						tokenAddress: token.tokenAddress,
+						decimals: token.tokenInfo.decimals,
+						tokenAddress: token.tokenInfo.address,
 						fiatConversion: !token.fiatConversion && parseFloat(token.fiatConversion) === 0  ? tokenUSDRate : parseFloat(token.fiatConversion)
 					},
 				})
 			})
 		);
+		
 		console.log('tokenList', tokenList)
 		return {value: tokenList};
 	}
