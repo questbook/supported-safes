@@ -79,7 +79,7 @@ export class TonWallet {
 						const lastTx = (await tonWeb.getTransactions(this.address, 1))
 						if(lastTx){
 							console.log('TON lastTx', lastTx)
-							callback({ transactionHash: lastTx[0].transaction_id.hash ?? "dfdfd" })
+							callback({ transactionHash: lastTx[0]?.transaction_id?.hash ?? "dfdfd" })
 						}
 					}
 					catch(e){
