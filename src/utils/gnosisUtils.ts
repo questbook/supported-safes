@@ -32,6 +32,8 @@ export const createEVMMetaTransactions = async (workspaceId: string, grantAddres
 					tokenUSDRate = 0
 				} else if(tokenSelected === 'spCELO') {
 					tokenUSDRate = 0
+				} else if(tokenSelected === 'USDC'){
+					tokenUSDRate = 1
 				}
 			} else {
 				tokenUSDRate = data.selectedToken.info.fiatConversion > 0 ? data.selectedToken.info.fiatConversion : 1
