@@ -28,7 +28,7 @@ export class gnosis implements SafeInterface {
 		const readyToExecuteTxs = await createEVMMetaTransactions(workspaceId, grantAddress, this.chainId.toString(), initiateTransactionData)
 		console.log('creating gnosis transaction for (edited)', readyToExecuteTxs)
 		//@ts-ignore
-		const provider = new ethers.providers.Web3Provider(window.ethereum)
+		const provider = new ethers.providers.Web3Provider(wallet || window.ethereum)
 		await provider.send('eth_requestAccounts', [])
 
 		const signer = provider.getSigner()
@@ -142,9 +142,9 @@ export class gnosis implements SafeInterface {
 		}
 	}
 
-    async isOwner(userAddress: string): Promise<boolean> {
+    async isOwner(userAddress: string, walletProvider?: any): Promise<boolean> {
 		//@ts-ignore
-		const provider = new ethers.providers.Web3Provider(window.ethereum)
+		const provider = new ethers.providers.Web3Provider(walletProvider || window.ethereum)
 		await provider.send('eth_requestAccounts', [])
 
 		const signer = provider.getSigner()
