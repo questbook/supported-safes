@@ -15,6 +15,7 @@ import { PolygonMainnet } from "../chains/polygon-mainnet"
 import { RinkebyTestnet } from "../chains/rinkeby-testnet"
 import { SolanaDevnet } from "../chains/solana-devnet"
 import { SolanaMainnet } from "../chains/solana-mainnet"
+import { starknetMainnet } from "../chains/starknet-mainnet"
 import { TelosMainnet } from "../chains/telos-mainnet"
 import { TonKeyMainnet } from "../chains/tonkey-mainnet"
 const SupportedSafesInfo: {[chainId: number]: {name: string, chainId: number, rpcURL: string, class: typeof EthereumMainnet | typeof SolanaMainnet |typeof TonKeyMainnet}} = {
@@ -65,6 +66,12 @@ const SupportedSafesInfo: {[chainId: number]: {name: string, chainId: number, rp
         chainId: 246,
         rpcURL: "https://safe-transaction.ewc.gnosis.io/",
         class: EnergyWebChain,
+    },
+    9004: {
+        name: "Starknet Mainnet",
+        chainId: 9004,
+        rpcURL: "https://starknet-mainnet.public.blastapi.io",
+        class: starknetMainnet,
     },
     73799: {
         name: "Energy Web Volta",
