@@ -1,6 +1,7 @@
 import { ArbitrumMainnet } from "../chains/arbitrum-mainnet"
 import { AuroraMainnet } from "../chains/aurora-mainnet"
 import { AvalancheMainnet } from "../chains/avalanche-mainnet"
+import { BaseMainnet } from "../chains/base-mainnet"
 import { BinanceMainnet } from "../chains/binance-mainnet"
 import { CeloMainnet } from "../chains/celo-mainnet"
 import { EnergyWebChain } from "../chains/energy-web-chain"
@@ -65,6 +66,12 @@ const SupportedSafesInfo: {[chainId: number]: {name: string, chainId: number, rp
         chainId: 246,
         rpcURL: "https://safe-transaction.ewc.gnosis.io/",
         class: EnergyWebChain,
+    },
+    8453: {
+        name: "Base Mainnet",
+        chainId: 8453,
+        rpcURL: "https://safe-transaction-base.safe.global/",
+        class: BaseMainnet,
     },
     73799: {
         name: "Energy Web Volta",
