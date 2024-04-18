@@ -8,7 +8,7 @@ import { EnergyWebChain } from "../chains/energy-web-chain"
 import { EnergyWebVolta } from "../chains/energy-web-volta"
 import { EthereumMainnet } from "../chains/ethereum-mainnet"
 import { GnosisMainnet } from "../chains/gnosis-mainnet"
-import { GoerliTestnet } from "../chains/goerli-testnet"
+import { SepoliaTestnet } from "../chains/sepolia-testnet"
 import { IoTexMainnet } from "../chains/iotex-mainnet"
 import { IoTexTestnet } from "../chains/iotex-testnet"
 import { OptimismMainnet } from "../chains/optimism-mainnet"
@@ -31,11 +31,11 @@ const SupportedSafesInfo: {[chainId: number]: {name: string, chainId: number, rp
         rpcURL: "https://safe-transaction.rinkeby.gnosis.io/",
         class: RinkebyTestnet,
     },
-    5: {
-        name: "Goerli Testnet",
-        chainId: 5,
-        rpcURL: "https://safe-transaction-goerli.safe.global/",
-        class: GoerliTestnet,
+    11155111: {
+        name: "Sepolia Testnet",
+        chainId: 11155111,
+        rpcURL: "https://safe-transaction-sepolia.safe.global/",
+        class: SepoliaTestnet,
     },
     10: {
         name: "Optimism Mainnet",
