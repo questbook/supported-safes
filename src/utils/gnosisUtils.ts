@@ -48,7 +48,7 @@ export const createEVMMetaTransactions = async (workspaceId: string, grantAddres
 			const tx = 
 			data.selectedToken?.tokenName?.toLowerCase() === 'eth' ? {
 				to: data.to,
-				data: txData,
+				data: '0x',
 				value: ethers.utils.parseUnits(usdToToken.toString(), 18).toString()
 			} :
 			{
