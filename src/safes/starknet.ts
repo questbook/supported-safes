@@ -154,14 +154,14 @@ export class starknet implements SafeInterface {
                 tokenIcon: 'https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png',
                 tokenName: 'USDC',
                 tokenValueAmount: getUSDCBalance?.balance,
-                usdValueAmount: getUSDCBalance?.balanceInUSD,
+                usdValueAmount: getUSDCBalance?.balance,
                 mintAddress: '0x053c91253bc9682c04929ca02ed00b3e423f6710d2ee7e0d5ebb06f3ecf368a8',
                 info: {
                     decimals: 6,
                     tokenAddress: '0x053c91253bc9682c04929ca02ed00b3e423f6710d2ee7e0d5ebb06f3ecf368a8',
-                    fiatConversion: getUSDCBalance?.usdConversion
+                    fiatConversion: 1
                 },
-                fiatConversion: getUSDCBalance?.usdConversion,
+                fiatConversion: 1,
                 symbol: 'USDC'
             })
         }
