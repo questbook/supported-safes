@@ -41,7 +41,11 @@ export class starknet implements SafeInterface {
         return owners.includes(userRawAddress) ? true : false
     }
 
-    async getToken(tokenAddress: string, address: string, tokenName: string): Promise<number> {
+    async getToken(tokenAddress: string, address: string, tokenName: string): Promise<{
+        balance: number;
+        balanceInUSD: number;
+        usdConversion: number;
+    }> {
         const provider = new RpcProvider({ nodeUrl: this.rpcURL })
 
         const account = address;
@@ -69,7 +73,11 @@ export class starknet implements SafeInterface {
         const balance = parseInt(balanceResponse.result[0].toString(), 16) * 10 **-decimals;
         const currentTime = (new Date()).toLocaleDateString().split('/').join('-')
         const balanceInUSD = await getTokenUSDonDate(tokenName, currentTime)
-        return balanceInUSD * balance ?? 0
+        return {
+            balance: balance,
+            balanceInUSD: balance * balanceInUSD,
+            usdConversion: balanceInUSD,
+        }
     }
 
 
@@ -101,17 +109,14 @@ export class starknet implements SafeInterface {
             throw new Error("couldn't load owners")
         }
         const getEthBalance = await this.getToken('0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7', this.safeAddress, 'ethereum')
-        const getUSDCBalance = await this.getToken('0x053c91253bc9682c04929ca02ed00b3e423f6710d2ee7e0d5ebb06f3ecf368a8', this.safeAddress, 'usd')
+        const getUSDCBalance = await this.getToken('0x053c91253bc9682c04929ca02ed00b3e423f6710d2ee7e0d5ebb06f3ecf368a8', this.safeAddress, 'starknet')
         const getSTRKBalance = await this.getToken('0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d', this.safeAddress, 'starknet')
-        const balance = getEthBalance
-        const usdcBalance = getUSDCBalance
-        const strkBalance = getSTRKBalance
         return {
             networkName: "Starknet",
             safeAddress: this.safeAddress,
             isDisabled: false,
             owners: owners,
-            amount: balance + usdcBalance + strkBalance,
+            amount: getEthBalance?.balanceInUSD +  getUSDCBalance?.balanceInUSD + getSTRKBalance?.balanceInUSD,
             networkType: 3,
             networkId: this.chainId,
             safeType: 'Starknet',
@@ -122,57 +127,57 @@ export class starknet implements SafeInterface {
     async getTokenAndbalance(): Promise<{ value?: TokenDetailsInterface[]; error?: string; }> {
         let list: TokenDetailsInterface[] = []
         const getEthBalance = await this.getToken('0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7', this.safeAddress, 'ethereum')
-        const getUSDCBalance = await this.getToken('0x053c91253bc9682c04929ca02ed00b3e423f6710d2ee7e0d5ebb06f3ecf368a8', this.safeAddress, 'usd')
+        const getUSDCBalance = await this.getToken('0x053c91253bc9682c04929ca02ed00b3e423f6710d2ee7e0d5ebb06f3ecf368a8', this.safeAddress, 'starknet')
         const getSTRKBalance = await this.getToken('0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d', this.safeAddress, 'starknet')
 
-        const currentTime = (new Date()).toLocaleDateString().split('/').join('-')
 
-        const ethUsdRate = await getTokenUSDonDate('ethereum', currentTime)
-        const usdcUsdRate = await getTokenUSDonDate('usd', currentTime)
         
-        if(getSTRKBalance > 0) {
-            const strkUsdRate = await getTokenUSDonDate('starknet', currentTime)
+        if(getSTRKBalance?.balance > 0) {
             list.push({
                 tokenIcon: '/v2/icons/toncoin.svg',
                 tokenName: 'STRK',
-                tokenValueAmount: getSTRKBalance,
-                usdValueAmount: getSTRKBalance * strkUsdRate,
+                tokenValueAmount: getSTRKBalance?.balance,
+                usdValueAmount: getSTRKBalance?.balanceInUSD,
                 mintAddress: '0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d',
                 info: {
                     decimals: 18,
                     tokenAddress: '0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d',
-                    fiatConversion: strkUsdRate
+                    fiatConversion: getSTRKBalance?.usdConversion
                 },
-                fiatConversion: strkUsdRate,
+                fiatConversion: getSTRKBalance?.usdConversion,
                 symbol: 'STRK'
             })
         }
 
-        if(getUSDCBalance > 0) {
+        if(getUSDCBalance?.balance > 0) {
             list.push({
                 tokenIcon: 'https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png',
                 tokenName: 'USDC',
-                tokenValueAmount: getUSDCBalance,
-                usdValueAmount: getUSDCBalance * usdcUsdRate,
+                tokenValueAmount: getUSDCBalance?.balance,
+                usdValueAmount: getUSDCBalance?.balanceInUSD,
                 mintAddress: '0x053c91253bc9682c04929ca02ed00b3e423f6710d2ee7e0d5ebb06f3ecf368a8',
                 info: {
                     decimals: 6,
                     tokenAddress: '0x053c91253bc9682c04929ca02ed00b3e423f6710d2ee7e0d5ebb06f3ecf368a8',
-                    fiatConversion: usdcUsdRate
+                    fiatConversion: getUSDCBalance?.usdConversion
                 },
-                fiatConversion: usdcUsdRate,
+                fiatConversion: getUSDCBalance?.usdConversion,
                 symbol: 'USDC'
             })
         }
-        if(getEthBalance > 0) {
+        if(getEthBalance?.balance > 0) {
         list.push({
             tokenIcon: '/v2/icons/toncoin.svg',
             tokenName: 'ETH',
-            tokenValueAmount: undefined,
-            usdValueAmount: getEthBalance,
-            mintAddress: undefined,
-            info: undefined,
-            fiatConversion: ethUsdRate,
+            tokenValueAmount: getEthBalance.balance,
+            usdValueAmount: getEthBalance.balanceInUSD,
+            mintAddress: '0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7',
+            info: {
+                decimals: 18,
+                tokenAddress: '0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7',
+                fiatConversion: getEthBalance.usdConversion
+            },
+            fiatConversion: getEthBalance.usdConversion,
             symbol: 'ETH'
         }) }
         console.log('list', list)
