@@ -101,13 +101,17 @@ export class starknet implements SafeInterface {
             throw new Error("couldn't load owners")
         }
         const getEthBalance = await this.getToken('0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7', this.safeAddress, 'ethereum')
+        const getUSDCBalance = await this.getToken('0x053c91253bc9682c04929ca02ed00b3e423f6710d2ee7e0d5ebb06f3ecf368a8', this.safeAddress, 'usd')
+        const getSTRKBalance = await this.getToken('0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d', this.safeAddress, 'starknet')
         const balance = getEthBalance
+        const usdcBalance = getUSDCBalance
+        const strkBalance = getSTRKBalance
         return {
             networkName: "Starknet",
             safeAddress: this.safeAddress,
             isDisabled: false,
             owners: owners,
-            amount: balance,
+            amount: balance + usdcBalance + strkBalance,
             networkType: 3,
             networkId: this.chainId,
             safeType: 'Starknet',
@@ -118,10 +122,49 @@ export class starknet implements SafeInterface {
     async getTokenAndbalance(): Promise<{ value?: TokenDetailsInterface[]; error?: string; }> {
         let list: TokenDetailsInterface[] = []
         const getEthBalance = await this.getToken('0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7', this.safeAddress, 'ethereum')
+        const getUSDCBalance = await this.getToken('0x053c91253bc9682c04929ca02ed00b3e423f6710d2ee7e0d5ebb06f3ecf368a8', this.safeAddress, 'usd')
+        const getSTRKBalance = await this.getToken('0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d', this.safeAddress, 'starknet')
 
         const currentTime = (new Date()).toLocaleDateString().split('/').join('-')
 
         const ethUsdRate = await getTokenUSDonDate('ethereum', currentTime)
+        const usdcUsdRate = await getTokenUSDonDate('usd', currentTime)
+        
+        if(getSTRKBalance > 0) {
+            const strkUsdRate = await getTokenUSDonDate('starknet', currentTime)
+            list.push({
+                tokenIcon: '/v2/icons/toncoin.svg',
+                tokenName: 'STRK',
+                tokenValueAmount: getSTRKBalance,
+                usdValueAmount: getSTRKBalance * strkUsdRate,
+                mintAddress: '0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d',
+                info: {
+                    decimals: 18,
+                    tokenAddress: '0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d',
+                    fiatConversion: strkUsdRate
+                },
+                fiatConversion: strkUsdRate,
+                symbol: 'STRK'
+            })
+        }
+
+        if(getUSDCBalance > 0) {
+            list.push({
+                tokenIcon: 'https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png',
+                tokenName: 'USDC',
+                tokenValueAmount: getUSDCBalance,
+                usdValueAmount: getUSDCBalance * usdcUsdRate,
+                mintAddress: '0x053c91253bc9682c04929ca02ed00b3e423f6710d2ee7e0d5ebb06f3ecf368a8',
+                info: {
+                    decimals: 6,
+                    tokenAddress: '0x053c91253bc9682c04929ca02ed00b3e423f6710d2ee7e0d5ebb06f3ecf368a8',
+                    fiatConversion: usdcUsdRate
+                },
+                fiatConversion: usdcUsdRate,
+                symbol: 'USDC'
+            })
+        }
+        if(getEthBalance > 0) {
         list.push({
             tokenIcon: '/v2/icons/toncoin.svg',
             tokenName: 'ETH',
@@ -131,7 +174,7 @@ export class starknet implements SafeInterface {
             info: undefined,
             fiatConversion: ethUsdRate,
             symbol: 'ETH'
-        })
+        }) }
         console.log('list', list)
         return { value: list }
     }

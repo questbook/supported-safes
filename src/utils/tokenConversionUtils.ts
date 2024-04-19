@@ -43,10 +43,18 @@ const getCeloTokenUSDRate = async () => {
 }
 
 const getTokenUSDonDate = async (tokenName: string, date: string) => {
+    try{
 	let url = `https://api.coingecko.com/api/v3/simple/price?ids=${tokenName}&vs_currencies=usd`
 	let tokenUsdValue = parseFloat((await axios.get(url)).data[tokenName].usd)
-	
+	localStorage.setItem(`${tokenName}`, tokenUsdValue.toString())
 	return tokenUsdValue;
+    } catch(e){
+        if(localStorage.getItem(`${tokenName}`)){
+            return parseFloat(localStorage.getItem(`${tokenName}`) || "0")
+        }
+        return 0
+    }
+
 }
 
 export { 
