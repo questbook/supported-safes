@@ -134,7 +134,7 @@ export class starknet implements SafeInterface {
         
         if(getSTRKBalance?.balance > 0) {
             list.push({
-                tokenIcon: '/v2/icons/toncoin.svg',
+                tokenIcon: 'https://s2.coinmarketcap.com/static/img/coins/200x200/22691.png',
                 tokenName: 'STRK',
                 tokenValueAmount: getSTRKBalance?.balance,
                 usdValueAmount: getSTRKBalance?.balanceInUSD,
