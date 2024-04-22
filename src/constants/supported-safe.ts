@@ -8,12 +8,12 @@ import { EnergyWebChain } from "../chains/energy-web-chain"
 import { EnergyWebVolta } from "../chains/energy-web-volta"
 import { EthereumMainnet } from "../chains/ethereum-mainnet"
 import { GnosisMainnet } from "../chains/gnosis-mainnet"
-import { GoerliTestnet } from "../chains/goerli-testnet"
 import { IoTexMainnet } from "../chains/iotex-mainnet"
 import { IoTexTestnet } from "../chains/iotex-testnet"
 import { OptimismMainnet } from "../chains/optimism-mainnet"
 import { PolygonMainnet } from "../chains/polygon-mainnet"
 import { RinkebyTestnet } from "../chains/rinkeby-testnet"
+import { SepoliaTestnet } from "../chains/sepolia-testnet"
 import { SolanaDevnet } from "../chains/solana-devnet"
 import { SolanaMainnet } from "../chains/solana-mainnet"
 import { TelosMainnet } from "../chains/telos-mainnet"
@@ -31,11 +31,11 @@ const SupportedSafesInfo: {[chainId: number]: {name: string, chainId: number, rp
         rpcURL: "https://safe-transaction.rinkeby.gnosis.io/",
         class: RinkebyTestnet,
     },
-    5: {
-        name: "Goerli Testnet",
-        chainId: 5,
+    11155111: {
+        name: "Seolia Testnet",
+        chainId: 11155111,
         rpcURL: "https://safe-transaction-goerli.safe.global/",
-        class: GoerliTestnet,
+        class: SepoliaTestnet,
     },
     10: {
         name: "Optimism Mainnet",

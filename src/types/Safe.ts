@@ -72,6 +72,7 @@ export interface TokenDetailsInterface {
     tokenIcon: string
     tokenName: string
     symbol: string
+    isNative?: boolean
     tokenValueAmount: number
     usdValueAmount: number
     mintAddress: string
