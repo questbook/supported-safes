@@ -46,7 +46,7 @@ export const createEVMMetaTransactions = async (workspaceId: string, grantAddres
 			const txData = encodeTransactionData(data.to, (usdToToken.toString()), rewardAssetDecimals, parseInt(workspaceId, 16), grantAddress, data.applicationId)
 			const tx = 
 			{
-				to: ethers.utils.getAddress(rewardAssetAddress),
+				to: data?.selectedToken?.isNative ? ethers.utils.getAddress(data.to) : ethers.utils.getAddress(rewardAssetAddress),
 				data: data?.selectedToken?.isNative ? '0x' :  txData,
 				value: data?.selectedToken?.isNative ? ethers.utils.parseUnits(usdToToken.toString(), data?.selectedToken.info.decimals).toString() : '0'
 			}
