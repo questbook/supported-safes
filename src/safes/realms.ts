@@ -14,7 +14,6 @@ import {
 } from '@solana/spl-governance';
 import { Connection, GetProgramAccountsFilter, PublicKey, TransactionInstruction } from '@solana/web3.js';
 import { TOKEN_PROGRAM_ID } from "@solana/spl-token"
-import { TokenListProvider } from '@solana/spl-token-registry'
 import axios from 'axios';
 import { solanaToUsd, solanaToUsdRate } from '../utils/tokenConversionUtils';
 import { solTokenTrxn, splTokenTrxn } from '../utils/realmsUtils';
@@ -235,8 +234,8 @@ export class realms implements SafeInterface {
 			];
 			const treasuryAccInfo = await connection.getParsedProgramAccounts(TOKEN_PROGRAM_ID, {filters:filters})
 
-			const allTokens = await new TokenListProvider().resolve()
-			const allTokenList = allTokens.filterByClusterSlug('mainnet-beta').getList()
+			const allTokens = []
+			const allTokenList = []
 			
 			await Promise.all(treasuryAccInfo.map(async (info: any)=>{
 					const tokenInfo = info.account.data?.parsed?.info;

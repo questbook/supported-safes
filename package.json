@@ -20,7 +20,6 @@
     "@safe-global/safe-service-client": "^1.5.0",
     "@solana/spl-governance": "0.3.18",
     "@solana/spl-token": "^0.1.8",
-    "@solana/spl-token-registry": "^0.2.4574",
     "@solana/web3.js": "1.66.2",
     "@types/ledgerhq__hw-transport": "^4.21.4",
     "axios": "^0.27.2",
