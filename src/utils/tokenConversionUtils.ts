@@ -37,9 +37,7 @@ const usdToSolana = async(usdAmount: number) => {
 }
 
 const getCeloTokenUSDRate = async () => {
-    console.log('axios', axios);
-	const response = await axios.get(`https://api.coingecko.com/api/v3/simple/price?ids=celo-dollar%2Ccelo%2Ctether%2Ccelo-euro&vs_currencies=usd`)
-	return response;
+	return { data: { 'celo-dollar': { usd: 1 }, 'celo-euro': { usd: 1 }, 'tether': { usd: 1 } } }
 }
 
 const getTokenUSDonDate = async (tokenName: string, date: string) => {
