@@ -43,7 +43,7 @@ export const createEVMMetaTransactions = async (workspaceId: string, grantAddres
 
 			console.log(workspaceId, 'Received workspace ID in string')
 			const txData = encodeTransactionData(data.to, (usdToToken.toString()), rewardAssetDecimals, parseInt(workspaceId, 16), grantAddress, data.applicationId)
-			const tx = data.selectedToken?.tokenName?.toLowerCase() === 'matic' ? 
+			const tx = data.selectedToken?.tokenName?.toLowerCase() === 'POL' ? 
 			{
 				to: data.to,
 				data: "0x",
