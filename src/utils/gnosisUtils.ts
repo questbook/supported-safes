@@ -1,4 +1,4 @@
-import { ethers, logger } from "ethers"
+import { ethers } from "ethers"
 import { erc20ABI } from "wagmi"
 import { getCeloTokenUSDRate } from "./tokenConversionUtils"
 
@@ -32,6 +32,8 @@ export const createEVMMetaTransactions = async (workspaceId: string, grantAddres
 					tokenUSDRate = 0
 				} else if(tokenSelected === 'spCELO') {
 					tokenUSDRate = 0
+				} else if(tokenSelected === 'USDC') {
+					tokenUSDRate = 1
 				}
 			} else {
 				tokenUSDRate = data.selectedToken.info.fiatConversion > 0 ? data.selectedToken.info.fiatConversion : 1
@@ -39,20 +41,19 @@ export const createEVMMetaTransactions = async (workspaceId: string, grantAddres
 
 			const rewardAssetDecimals = data.selectedToken.info.decimals
 			const rewardAssetAddress = data.selectedToken.info.tokenAddress
-			const usdToToken = (data.amount / tokenUSDRate).toFixed(data.selectedToken?.tokenName?.toLowerCase() === 'eth' ? 18 : rewardAssetDecimals)
+			const usdToToken = (data.amount / tokenUSDRate).toFixed(rewardAssetDecimals)
 
-			console.log(workspaceId, 'Received workspace ID in string')
 			const txData = encodeTransactionData(data.to, (usdToToken.toString()), rewardAssetDecimals, parseInt(workspaceId, 16), grantAddress, data.applicationId)
-			const tx = 
-			data.selectedToken?.tokenName?.toLowerCase() === 'eth' ? {
+			const tx = data.selectedToken?.tokenName?.toLowerCase() === 'pol' ? 
+			{
 				to: data.to,
-				data: txData,
-				value: ethers.utils.parseUnits(usdToToken.toString(), 18).toString()
-			} :
+				data: "0x",
+				value: ethers.utils.parseUnits(data.amount.toString(), rewardAssetDecimals).toString(),
+			} : 
 			{
 				to: ethers.utils.getAddress(rewardAssetAddress),
 				data: txData,
-				value: '0'
+				value: "0",
 			}
 			return tx
 		})

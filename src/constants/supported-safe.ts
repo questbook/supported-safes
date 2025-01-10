@@ -24,6 +24,12 @@ const SupportedSafesInfo: {[chainId: number]: {name: string, chainId: number, rp
         rpcURL: "https://safe-transaction-mainnet.safe.global/",
         class: EthereumMainnet,
     },
+    137: {
+        name: "Polygon Mainnet",
+        chainId: 137,
+        rpcURL: "https://safe-transaction-polygon.safe.global/",
+        class: PolygonMainnet,
+    },
     4: {
         name: "Rinkeby Testnet",
         chainId: 4,
@@ -53,12 +59,6 @@ const SupportedSafesInfo: {[chainId: number]: {name: string, chainId: number, rp
         chainId: 56,
         rpcURL: "https://safe-transaction-bsc.safe.global/",
         class: BinanceMainnet,
-    },
-    137: {
-        name: "Polygon Mainnet",
-        chainId: 137,
-        rpcURL: "https://safe-transaction-polygon.safe.global/",
-        class: PolygonMainnet,
     },
     246: {
         name: "Energy Web Chain",
