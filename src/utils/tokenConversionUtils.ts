@@ -37,10 +37,30 @@ const usdToSolana = async(usdAmount: number) => {
 }
 
 const getCeloTokenUSDRate = async () => {
-    console.log('axios', axios);
-	const response = await axios.get(`https://api.coingecko.com/api/v3/simple/price?ids=celo-dollar%2Ccelo%2Ctether%2Ccelo-euro&vs_currencies=usd`)
-	return response;
+    const cachedData = localStorage.getItem('celoTokenUSDRate');
+    const currentTime = Date.now();
+    const oneMinute = 60 * 1000; // 1 minute in milliseconds
+
+    if (cachedData) {
+        const { data, timestamp } = JSON.parse(cachedData);
+        if (currentTime - timestamp < oneMinute) {
+            return data;
+        }
+    }
+
+    try {
+        const response = await axios.get(`https://api.coingecko.com/api/v3/simple/price?ids=celo-dollar%2Ccelo%2Ctether%2Ccelo-euro&vs_currencies=usd`);
+        const dataToCache = { data: response.data, timestamp: currentTime };
+        localStorage.setItem('celoTokenUSDRate', JSON.stringify(dataToCache));
+        return response.data;
+    } catch (e) {
+        console.log('error', e);
+        const fallbackData = { celo: { usd: 1 }, 'celo-dollar': { usd: 1 }, tether: { usd: 1 }, 'celo-euro': { usd: 1 } };
+        localStorage.setItem('celoTokenUSDRate', JSON.stringify({ data: fallbackData, timestamp: currentTime }));
+        return fallbackData;
+    }
 }
+
 
 const getTokenUSDonDate = async (tokenName: string, date: string) => {
 	let url = `https://api.coingecko.com/api/v3/simple/price?ids=${tokenName}&vs_currencies=usd`

@@ -19,6 +19,7 @@ export interface SelectedTokenInterface{
         mint?: string;
         owner?: string;
         state?: string;
+        rewardToken?: string;
         tokenAmount?: {
             amount?: string;
             decimals?: number;

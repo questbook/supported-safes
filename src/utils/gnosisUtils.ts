@@ -1,4 +1,4 @@
-import { ethers, logger } from "ethers"
+import { ethers } from "ethers"
 import { erc20ABI } from "wagmi"
 import { getCeloTokenUSDRate } from "./tokenConversionUtils"
 
@@ -41,8 +41,8 @@ export const createEVMMetaTransactions = async (workspaceId: string, grantAddres
 
 			const rewardAssetDecimals = data.selectedToken.info.decimals
 			const rewardAssetAddress = data.selectedToken.info.tokenAddress
-			const usdToToken = (data.amount / tokenUSDRate).toFixed(data?.selectedToken?.isNative ? data?.selectedToken.info.decimals : rewardAssetDecimals)
-			console.log('isNative', data?.selectedToken?.isNative)
+			const isOneIsToOneTransfer = data?.selectedToken?.rewardToken?.toLowerCase() === data?.selectedToken?.tokenName?.toLowerCase()
+			const usdToToken = isOneIsToOneTransfer ? data.amount : (data.amount / tokenUSDRate).toFixed(data?.selectedToken?.isNative ? data?.selectedToken.info.decimals : rewardAssetDecimals)
 			const txData = encodeTransactionData(data.to, (usdToToken.toString()), rewardAssetDecimals, parseInt(workspaceId, 16), grantAddress, data.applicationId)
 			const tx = 
 			{
