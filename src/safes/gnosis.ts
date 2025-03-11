@@ -115,9 +115,9 @@ export class gnosis implements SafeInterface {
 					if (nextNonce - initialNonce > 10) throw new Error('Too many pending transactions')
 				} while (true)
 
-				safeTransaction = await safeSdk.createTransaction({ safeTransactionData: readyToExecuteTxs, options: { nonce: nextNonce }})
+				safeTransaction = await safeSdk.createTransaction({ safeTransactionData: readyToExecuteTxs, onlyCalls: true, options: { nonce: nextNonce }})
 			} else {
-				safeTransaction = await safeSdk.createTransaction({ safeTransactionData: readyToExecuteTxs })
+				safeTransaction = await safeSdk.createTransaction({ safeTransactionData: readyToExecuteTxs, onlyCalls: true })
 			}
 			const safeTxHash = await safeSdk.getTransactionHash(safeTransaction)
 			const senderSignature = await safeSdk.signTransactionHash(safeTxHash)
