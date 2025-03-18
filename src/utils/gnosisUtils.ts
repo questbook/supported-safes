@@ -4,14 +4,21 @@ import { getCeloTokenUSDRate } from "./tokenConversionUtils"
 
 
 export const encodeTransactionData = (recipientAddress: string, fundAmount: string, rewardAssetDecimals: number, workspaceId: number, grantAddress: string, applicationId: number) =>  {
-	console.log('params for encodeTransactionData' ,workspaceId, applicationId, fundAmount, rewardAssetDecimals)
+    // workspaceId: unique identifier for the workspace where the transaction is being initiated
+    // applicationId: unique identifier for the grant application being funded
+    
     const ERC20Interface = new ethers.utils.Interface(erc20ABI)
-   let txData = ERC20Interface.encodeFunctionData('transfer', [
+    let txData = ERC20Interface.encodeFunctionData('transfer', [
         recipientAddress,
         ethers.utils.parseUnits(fundAmount, rewardAssetDecimals)
     ])
 
-	txData = txData + ethers.utils.hexZeroPad(ethers.utils.hexlify(workspaceId), 32).slice(2) + ethers.utils.hexZeroPad(ethers.utils.hexlify(grantAddress), 32).slice(2) + ethers.utils.hexZeroPad(ethers.utils.hexlify(applicationId), 32).slice(2) + ethers.utils.hexZeroPad(ethers.utils.hexlify('0x5175657374626f6f6b'), 32).slice(2)
+    // Append additional data to transaction:
+    // - workspaceId: identifies the workspace (32 bytes)
+    // - grantAddress: address of the grant contract (32 bytes) 
+    // - applicationId: identifies the specific grant application (32 bytes)
+    // - '0x5175657374626f6f6b': identifier for Questbook platform (32 bytes)
+    txData = txData + ethers.utils.hexZeroPad(ethers.utils.hexlify(workspaceId), 32).slice(2) + ethers.utils.hexZeroPad(ethers.utils.hexlify(grantAddress), 32).slice(2) + ethers.utils.hexZeroPad(ethers.utils.hexlify(applicationId), 32).slice(2) + ethers.utils.hexZeroPad(ethers.utils.hexlify('0x5175657374626f6f6b'), 32).slice(2)
 
     return txData
 }
@@ -50,7 +57,6 @@ export const createEVMMetaTransactions = async (workspaceId: string, grantAddres
 				data: data?.selectedToken?.isNative ? '0x' :  txData,
 				value: data?.selectedToken?.isNative ? ethers.utils.parseUnits(usdToToken.toString(), data?.selectedToken.info.decimals).toString() : '0'
 			}
-			const value = data?.selectedToken?.isNative ? ethers.utils.parseUnits(usdToToken.toString(), data?.selectedToken.info.decimals).toString() : '0'
 			return tx
 		})
 

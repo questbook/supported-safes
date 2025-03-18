@@ -119,18 +119,14 @@ export class gnosis implements SafeInterface {
 			} else {
 				safeTransaction = await safeSdk.createTransaction({ safeTransactionData: readyToExecuteTxs })
 			}
+			const signature = await safeSdk.signTypedData(safeTransaction, 'v4')
 			const safeTxHash = await safeSdk.getTransactionHash(safeTransaction)
-			const senderSignature = await safeSdk.signTransactionHash(safeTxHash)
-			// console.log(await signer.getAddress())
-
-			// console.log('safe address', safeAddress, safeTransaction.data, safeTxHash, senderSignature.data)
-
 			await safeService.proposeTransaction({
 				safeAddress: this.safeAddress!,
 				safeTransactionData: safeTransaction.data,
-				safeTxHash,
-				senderAddress: senderSignature.signer,
-				senderSignature: senderSignature.data,
+				safeTxHash: safeTxHash,
+				senderAddress: signature.signer,
+				senderSignature: signature.data,
 			})
 
 			return safeTxHash
@@ -259,7 +255,6 @@ export class gnosis implements SafeInterface {
 		const celoTokensUSDRateMapping = await (await getCeloTokenUSDRate()).data;
 		Promise.all(
 			tokensFetched.filter((token: any) => token.tokenInfo).map((token: any) => {
-				console.log('token', token)
 				let tokenUSDRate = 0;
 				if(token.tokenInfo.symbol === 'cUSD') {
 					tokenUSDRate = celoTokensUSDRateMapping['celo-dollar'].usd
@@ -295,8 +290,6 @@ export class gnosis implements SafeInterface {
 				})
 			})
 		);
-		
-		console.log('tokenList', tokenList)
 		return {value: tokenList};
 	}
 
