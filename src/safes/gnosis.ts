@@ -35,7 +35,7 @@ export class gnosis implements SafeInterface {
 			}
 
 			const { workspaceId, grantAddress } = parsedExtraData
-			if (!workspaceId || !ethers.utils.isAddress(grantAddress)) {
+			if (!workspaceId || grantAddress) {
 				return { error: 'Invalid workspaceId or grantAddress' }
 			}
 
