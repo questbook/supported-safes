@@ -1,4 +1,4 @@
-import { ethers, logger } from "ethers"
+import { ethers } from "ethers"
 import { erc20ABI } from "wagmi"
 import { getCeloTokenUSDRate } from "./tokenConversionUtils"
 
@@ -42,15 +42,21 @@ export const createEVMMetaTransactions = async (workspaceId: string, grantAddres
 			const rewardAssetDecimals = data.selectedToken.info.decimals
 			const rewardAssetAddress = data.selectedToken.info.tokenAddress
 			const usdToToken = (data.amount / tokenUSDRate).toFixed(data?.selectedToken?.isNative ? data?.selectedToken.info.decimals : rewardAssetDecimals)
-			console.log('isNative', data?.selectedToken?.isNative)
 			const txData = encodeTransactionData(data.to, (usdToToken.toString()), rewardAssetDecimals, parseInt(workspaceId, 16), grantAddress, data.applicationId)
-			const tx = 
+			const tx = data.selectedToken?.tokenName?.toLowerCase() === 'pol' || data?.selectedToken?.isNative ?
 			{
-				to: data?.selectedToken?.isNative ? ethers.utils.getAddress(data.to) : ethers.utils.getAddress(rewardAssetAddress),
-				data: data?.selectedToken?.isNative ? '0x' :  txData,
-				value: data?.selectedToken?.isNative ? ethers.utils.parseUnits(usdToToken.toString(), data?.selectedToken.info.decimals).toString() : '0'
+				to: ethers.utils.getAddress(data.to),
+				data: "0x",
+				value: ethers.utils.parseUnits(
+					data.selectedToken?.tokenName?.toLowerCase() === 'pol' ? data.amount.toString() : usdToToken.toString(),
+					data.selectedToken?.tokenName?.toLowerCase() === 'pol' ? rewardAssetDecimals : data?.selectedToken.info.decimals
+				).toString()
+			} :
+			{
+				to: ethers.utils.getAddress(rewardAssetAddress),
+				data: txData,
+				value: "0"
 			}
-			const value = data?.selectedToken?.isNative ? ethers.utils.parseUnits(usdToToken.toString(), data?.selectedToken.info.decimals).toString() : '0'
 			return tx
 		})
 
