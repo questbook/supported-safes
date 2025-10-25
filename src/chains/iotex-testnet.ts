@@ -5,8 +5,8 @@ export class IoTexTestnet extends gnosis {
     chainLogo: string;
     safeLogo: string;
 
-    constructor(safeAddress: string) {
-        super(4690, 'https://transaction-testnet.safe.iotex.io', safeAddress)
+    constructor(safeAddress: string, apiKey?: string) {
+        super(4690, 'https://transaction-testnet.safe.iotex.io', safeAddress, apiKey)
         this.chainName = 'IoTex Testnet'
         this.chainLogo = 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/iotex/info/logo.png'
         this.safeLogo = '/safes_icons/iotex.svg'

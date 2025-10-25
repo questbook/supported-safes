@@ -7,21 +7,21 @@ import { SafeDetailsInterface } from "./types/Safe";
 import { TonWallet } from "./wallets/TON";
 export class SupportedPayouts {
 
-    getSafe(chainId: number, safeAddress: string): EthereumMainnet | SolanaMainnet| TonKeyMainnet {
+    getSafe(chainId: number, safeAddress: string, apiKey?: string): EthereumMainnet | SolanaMainnet| TonKeyMainnet {
         const safeInfo = SupportedSafesInfo[chainId];
         if (safeInfo) {
-            return new safeInfo.class(safeAddress);
+            return new safeInfo.class(safeAddress, apiKey);
         }
     }
     
-    async getSafeByAddress(address: string, callback: (value: SafeDetailsInterface[])=>void) {
+    async getSafeByAddress(address: string, callback: (value: SafeDetailsInterface[])=>void, apiKey?: string) {
         const CHAIN_IDS = Object.keys(SupportedSafesInfo);
         const safes = await Promise.all(CHAIN_IDS.map(async (chainId) => {
             const safeInfo: {name: string, chainId: number, rpcURL: string, class: typeof EthereumMainnet | typeof SolanaMainnet | typeof TonKeyMainnet} = SupportedSafesInfo[chainId];
             console.log(safeInfo, chainId)
-            if(address){        
+            if(address){
                 try{
-                    const safe = new safeInfo.class(address);
+                    const safe = new safeInfo.class(address, apiKey);
                     const res = await safe.getSafeDetails();
                     console.log(chainId, res)
                     if (res) {

@@ -5,8 +5,8 @@ export class EnergyWebChain extends gnosis {
     chainLogo: string;
     safeLogo: string;
 
-    constructor(safeAddress: string) {
-        super(246, 'https://safe-transaction.ewc.gnosis.io/', safeAddress)
+    constructor(safeAddress: string, apiKey?: string) {
+        super(246, 'https://safe-transaction.ewc.gnosis.io/', safeAddress, apiKey)
         this.chainName = 'Energy Web Chain'
         this.chainLogo = 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/energyweb/info/logo.png'
         this.safeLogo = '/safes_icons/safe.svg'

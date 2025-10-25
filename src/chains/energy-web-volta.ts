@@ -5,8 +5,8 @@ export class EnergyWebVolta extends gnosis {
     chainLogo: string;
     safeLogo: string;
 
-    constructor(safeAddress: string) {
-        super(73799, 'https://safe-transaction.volta.gnosis.io/', safeAddress)
+    constructor(safeAddress: string, apiKey?: string) {
+        super(73799, 'https://safe-transaction.volta.gnosis.io/', safeAddress, apiKey)
         this.chainName = 'Energy Web Volta'
         this.chainLogo = 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/energyweb/info/logo.png'
         this.safeLogo = '/safes_icons/safe.svg'
