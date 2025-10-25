@@ -1,5 +1,6 @@
-import { SupportedSafes } from "../index";
+import { SupportedPayouts } from "../index";
 
-test("SupportedSafes", () => {
-    expect(new SupportedSafes().getSafe(900001, "")).toBeDefined();  
+test("SupportedPayouts", () => {
+    const apiKey = process.env.SAFE_API_KEY; // Optional: can be undefined
+    expect(new SupportedPayouts().getSafe(900001, "", apiKey)).toBeDefined();
 });

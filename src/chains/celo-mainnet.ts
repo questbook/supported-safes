@@ -5,8 +5,8 @@ export class CeloMainnet extends gnosis {
     chainLogo: string;
     safeLogo: string;
 
-    constructor(safeAddress: string) {
-        super(42220, 'https://transaction-service.gnosis-safe-staging.celo-networks-dev.org/',  safeAddress)
+    constructor(safeAddress: string, apiKey?: string) {
+        super(42220, 'https://transaction-service.gnosis-safe-staging.celo-networks-dev.org/', safeAddress, apiKey)
         this.chainName = 'Celo Mainnet'
         this.chainLogo = 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/celo/info/logo.png'
         this.safeLogo = '/safes_icons/celo.svg'

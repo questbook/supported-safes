@@ -1,6 +1,5 @@
-import { ethers, logger } from 'ethers'
+import { ethers } from 'ethers'
 import Safe, { ContractNetworksConfig } from '@safe-global/safe-core-sdk'
-import { SafeTransaction } from '@safe-global/safe-core-sdk-types';
 import EthersAdapter from '@safe-global/safe-ethers-lib'
 import SafeServiceClient from '@safe-global/safe-service-client'
 import { getCeloTokenUSDRate } from '../utils/tokenConversionUtils';
@@ -13,11 +12,49 @@ export class gnosis implements SafeInterface {
 	chainId: number;
 	rpcURL: string;
 	safeAddress: string | undefined;
+	apiKey: string;
 
-	constructor(chainId: number, rpcURL: string, safeAddress: string) {
+	constructor(chainId: number, rpcURL: string, safeAddress: string, apiKey?: string) {
 		this.chainId = chainId
 		this.rpcURL = rpcURL
 		this.safeAddress = ethers.utils.getAddress(safeAddress)
+		this.apiKey = apiKey || ''
+	}
+
+	// Helper method to get API headers with authentication
+	private getSafeApiHeaders() {
+		const headers: any = {
+			'Content-Type': 'application/json'
+		}
+		if (this.apiKey) {
+			headers['Authorization'] = `Bearer ${this.apiKey}`
+		}
+		return headers
+	}
+
+	// Helper method to map chainId to Safe API chain identifier
+	private getSafeApiChainId(): string {
+		const chainMapping: { [key: number]: string } = {
+			1: 'eth',
+			5: 'gor',
+			10: 'oeth',
+			56: 'bnb',
+			100: 'gno',
+			137: 'matic',
+			8453: 'base',
+			42161: 'arb1',
+			43114: 'avax',
+			11155111: 'sep',
+			40: 'telos',
+			4689: 'iotex',
+			4690: 'iotex-testnet'
+		}
+		return chainMapping[this.chainId] || 'eth'
+	}
+
+	// Helper method to get Safe API base URL
+	private getSafeApiBaseUrl(): string {
+		return `https://api.safe.global/tx-service/${this.getSafeApiChainId()}/api/v1`
 	}
 
 	async proposeTransactions(extraData: string, initiateTransactionData: any, wallet: any): Promise<string | errorMessage> {
@@ -108,10 +145,15 @@ export class gnosis implements SafeInterface {
 			}
 
 			try {
+				// Use Safe API endpoint
+				const baseApiUrl = this.getSafeApiBaseUrl()
+
 				// Get current nonce from API
-				const nonceURL = `${this.rpcURL}/api/v1/safes/${this.safeAddress}/`
-				const { data: nonceData } = await axios.get(nonceURL)
-				if (!nonceData?.nonce) {
+				const nonceURL = `${baseApiUrl}/safes/${this.safeAddress}`
+				const { data: nonceData } = await axios.get(nonceURL, {
+					headers: this.getSafeApiHeaders()
+				})
+				if (nonceData?.nonce === undefined) {
 					throw new Error('Could not fetch current nonce')
 				}
 				let nextNonce = parseInt(nonceData.nonce)
@@ -119,8 +161,10 @@ export class gnosis implements SafeInterface {
 
 				// Check for pending transactions
 				do {
-					const nonceURL = `${this.rpcURL}/api/v1/safes/${this.safeAddress}/multisig-transactions/?nonce=${nextNonce}&ordering=submissionDate`
-					const nonceResponse = await axios.get(nonceURL)
+					const pendingTxUrl = `${baseApiUrl}/safes/${this.safeAddress}/multisig-transactions?nonce=${nextNonce}&ordering=submissionDate`
+					const nonceResponse = await axios.get(pendingTxUrl, {
+						headers: this.getSafeApiHeaders()
+					})
 					console.log(nonceResponse, 'Nonce response')
 					if (nonceResponse.data?.count === 0) break
 					++nextNonce
@@ -270,9 +314,9 @@ export class gnosis implements SafeInterface {
 				const signature = await signer._signTypedData(domain, types, message)
 				const contractTransactionHash = ethers.utils._TypedDataEncoder.hash(domain, types, message)
 
-				// Submit transaction
+				// Submit transaction using Safe API
 				try {
-					const proposeURL = `${this.rpcURL}/api/v1/safes/${this.safeAddress}/multisig-transactions/`
+					const proposeURL = `${baseApiUrl}/safes/${this.safeAddress}/multisig-transactions`
 					await axios.post(proposeURL, {
 						safe: this.safeAddress,
 						to: safeTransactionData.to,
@@ -289,6 +333,8 @@ export class gnosis implements SafeInterface {
 						safeTxHash: contractTransactionHash,
 						sender: await signer.getAddress(),
 						signature
+					}, {
+						headers: this.getSafeApiHeaders()
 					})
 					return contractTransactionHash
 				} catch (e: any) {
@@ -314,7 +360,7 @@ export class gnosis implements SafeInterface {
 
 			const signer = provider.getSigner()
 			const currentChain = await signer.getChainId()
-			
+
 			// Verify correct chain
 			if (currentChain !== this.chainId) {
 				console.error("Wrong chain detected")
@@ -323,7 +369,7 @@ export class gnosis implements SafeInterface {
 
 			// Get connected address
 			const connectedAddress = await signer.getAddress()
-			
+
 			// Verify the provided address matches the connected wallet
 			if (connectedAddress.toLowerCase() !== userAddress.toLowerCase()) {
 				console.error("Connected wallet doesn't match provided address")
@@ -331,9 +377,10 @@ export class gnosis implements SafeInterface {
 			}
 
 			// Get safe owners from API
-			const response = await fetch(`${this.rpcURL}/api/v1/safes/${this.safeAddress}`)
-			const safeInfo = await response.json()
-			
+			const apiUrl = `${this.getSafeApiBaseUrl()}/safes/${this.safeAddress}`
+			const response = await axios.get(apiUrl, { headers: this.getSafeApiHeaders() })
+			const safeInfo = response.data
+
 			if (!safeInfo.owners || !Array.isArray(safeInfo.owners)) {
 				console.error('Invalid owners data from Safe')
 				return false
@@ -359,8 +406,8 @@ export class gnosis implements SafeInterface {
 	}
 
 	async getOwners (): Promise<string[]> {
-		const gnosisUrl = `${this.rpcURL}/api/v1/safes/${this.safeAddress}`
-		const response = await axios.get(gnosisUrl)
+		const apiUrl = `${this.getSafeApiBaseUrl()}/safes/${this.safeAddress}`
+		const response = await axios.get(apiUrl, { headers: this.getSafeApiHeaders() })
 		return response.data.owners;
 	}
 
@@ -390,7 +437,9 @@ export class gnosis implements SafeInterface {
 	async getTokenAndbalance(): Promise<{value?: TokenDetailsInterface[], error?: string}> {
 		const tokenList: any[] = []
 		const gnosisUrl = `https://safe-client.safe.global/v1/chains/${this.chainId}/safes/${this.safeAddress}/balances/usd`
-		const response = await axios.get(gnosisUrl)
+		const response = await axios.get(gnosisUrl, {
+			headers: this.getSafeApiHeaders()
+		})
 		const tokensFetched = response.data.items
 		const celoTokensUSDRateMapping = await (await getCeloTokenUSDRate()).data;
 		Promise.all(

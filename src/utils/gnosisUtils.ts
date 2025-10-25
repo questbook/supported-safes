@@ -4,7 +4,6 @@ import { getCeloTokenUSDRate } from "./tokenConversionUtils"
 
 
 export const encodeTransactionData = (recipientAddress: string, fundAmount: string, rewardAssetDecimals: number, workspaceId: number, grantAddress: string, applicationId: number) =>  {
-	console.log('params for encodeTransactionData' ,workspaceId, applicationId, fundAmount, rewardAssetDecimals)
     const ERC20Interface = new ethers.utils.Interface(erc20ABI)
    let txData = ERC20Interface.encodeFunctionData('transfer', [
         recipientAddress,
@@ -42,7 +41,6 @@ export const createEVMMetaTransactions = async (workspaceId: string, grantAddres
 			const rewardAssetDecimals = data.selectedToken.info.decimals
 			const rewardAssetAddress = data.selectedToken.info.tokenAddress
 			const usdToToken = (data.amount / tokenUSDRate).toFixed(data?.selectedToken?.isNative ? data?.selectedToken.info.decimals : rewardAssetDecimals)
-			console.log('isNative', data?.selectedToken?.isNative)
 			const txData = encodeTransactionData(data.to, (usdToToken.toString()), rewardAssetDecimals, parseInt(workspaceId, 16), grantAddress, data.applicationId)
 			const tx = 
 			{
