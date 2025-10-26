@@ -1,6 +1,4 @@
 import { ethers } from 'ethers'
-import Safe, { type ContractNetworksConfig } from '@safe-global/protocol-kit'
-import SafeApiKit from '@safe-global/api-kit'
 import { getCeloTokenUSDRate } from '../utils/tokenConversionUtils';
 import axios from 'axios';
 import { createEVMMetaTransactions } from '../utils/gnosisUtils';
@@ -89,61 +87,6 @@ export class gnosis implements SafeInterface {
 				return { error: "you're on the wrong chain" }
 			}
 
-			let safeSdk: Safe
-
-			// Keep existing contract network configurations
-			if (this.chainId === 40) {
-				const contractNetworks = {
-					[this.chainId]: {
-						multiSendAddress: '0xA238CBeb142c10Ef7Ad8442C6D1f9E89e07e7761',
-						safeSingletonAddress: '0xe591ae490dcc235f420fb7ae3239e0df3ae2048f',
-						safeProxyFactoryAddress: '0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2',
-						multiSendCallOnlyAddress: '0x40A2aCCbd92BCA938b02010E17A5b8929b49130D',
-						fallbackHandlerAddress: '',
-						signMessageLibAddress: '',
-						createCallAddress: '',
-						simulateTxAccessorAddress: '',
-						safeWebAuthnSignerFactoryAddress: '',
-						safeWebAuthnSharedSignerAddress: ''
-					}
-				} as unknown as ContractNetworksConfig
-				safeSdk = await Safe.init({ provider: provider.provider as any, safeAddress: this.safeAddress!, contractNetworks })
-			} else if (this.chainId === 4689) {
-				// IoTeX Mainnet configuration
-				const contractNetworks = {
-					[this.chainId]: {
-						multiSendAddress: '0x998739BFdAAdde7C933B942a68053933098f9EDa',
-						safeSingletonAddress: '0x69f4D1788e39c87893C980c06EdF4b7f686e2938',
-						safeProxyFactoryAddress: '0xC22834581EbC8527d974F8a1c97E1bEA4EF910BC',
-						multiSendCallOnlyAddress: '0xA1dabEF33b3B82c7814B6D82A79e50F4AC44102B',
-						createCallAddress: '0xB19D6FFc2182150F8Eb585b79D4ABcd7C5640A9d',
-						fallbackHandlerAddress: '0x017062a1dE2FE6b99BE3d9d37841FeD19F573804',
-						signMessageLibAddress: '0x98FFBBF51bb33A056B08ddf711f289936AafF717',
-						simulateTxAccessorAddress: '',
-						safeWebAuthnSignerFactoryAddress: '',
-						safeWebAuthnSharedSignerAddress: ''
-					}
-				} as unknown as ContractNetworksConfig
-				safeSdk = await Safe.init({ provider: provider.provider as any, safeAddress: this.safeAddress!, contractNetworks })
-			} else if (this.chainId === 4690) {
-				// IoTeX Testnet configuration
-				const contractNetworks = {
-					[this.chainId]: {
-						multiSendAddress: '0x3965413148aD58Caa782c54F2695df9087b9d9Db',
-						safeSingletonAddress: '0xa3238D50fc88866B7740dbdE817A4e6556998eB5',
-						safeProxyFactoryAddress: '0xe6A900e5a57aD203e102F4dE7A7fA8Dc189CecD2',
-						multiSendCallOnlyAddress: '0x53010C9D478586675EfcfA3bb3cf6E574b89587B',
-						createCallAddress: '0xf0f5c82aB98Ae91DBAef416c41bf52DBF9Fe79f8',
-						fallbackHandlerAddress: '0xa772301E1122aE5Fa906c4e3aA795e754b5d649C',
-						signMessageLibAddress: '0x150e2D832F6035ac8B3c3af6F394303a652556dc',
-						simulateTxAccessorAddress: '',
-						safeWebAuthnSignerFactoryAddress: '',
-						safeWebAuthnSharedSignerAddress: ''
-					}
-				} as unknown as ContractNetworksConfig
-				safeSdk = await Safe.init({ provider: provider.provider as any, safeAddress: this.safeAddress!, contractNetworks })
-			}
-
 			try {
 				// Use Safe API endpoint
 				const baseApiUrl = this.getSafeApiBaseUrl()
@@ -195,12 +138,8 @@ export class gnosis implements SafeInterface {
 						operation: tx.operation || 0
 					}))
 
-					// Get appropriate MultiSend contract address
-					const multiSendContract = this.chainId === 4689
-						? '0x998739BFdAAdde7C933B942a68053933098f9EDa'  // IoTeX mainnet
-						: this.chainId === 4690
-							? '0x3965413148aD58Caa782c54F2695df9087b9d9Db' // IoTeX testnet
-							: '0x40A2aCCbd92BCA938b02010E17A5b8929b49130D' // Default
+					// Use standard MultiSend contract address (deployed on all supported networks)
+					const multiSendContract = '0x40A2aCCbd92BCA938b02010E17A5b8929b49130D'
 
 					// Create the encoded data for the multi-send transaction
 					const multiSendInterface = new ethers.utils.Interface([
