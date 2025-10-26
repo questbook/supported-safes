@@ -8,15 +8,12 @@ import { EnergyWebChain } from "../chains/energy-web-chain"
 import { EnergyWebVolta } from "../chains/energy-web-volta"
 import { EthereumMainnet } from "../chains/ethereum-mainnet"
 import { GnosisMainnet } from "../chains/gnosis-mainnet"
-import { IoTexMainnet } from "../chains/iotex-mainnet"
-import { IoTexTestnet } from "../chains/iotex-testnet"
 import { OptimismMainnet } from "../chains/optimism-mainnet"
 import { PolygonMainnet } from "../chains/polygon-mainnet"
 import { RinkebyTestnet } from "../chains/rinkeby-testnet"
 import { SepoliaTestnet } from "../chains/sepolia-testnet"
 import { SolanaDevnet } from "../chains/solana-devnet"
 import { SolanaMainnet } from "../chains/solana-mainnet"
-import { TelosMainnet } from "../chains/telos-mainnet"
 import { TonKeyMainnet } from "../chains/tonkey-mainnet"
 const SupportedSafesInfo: {[chainId: number]: {name: string, chainId: number, rpcURL: string, class: typeof EthereumMainnet | typeof SolanaMainnet |typeof TonKeyMainnet}} = {
     1: {
@@ -42,12 +39,6 @@ const SupportedSafesInfo: {[chainId: number]: {name: string, chainId: number, rp
         chainId: 10,
         rpcURL: "https://safe-transaction-optimism.safe.global/",
         class: OptimismMainnet,
-    },
-    40: {
-        name: "Telos Mainnet",
-        chainId: 40,
-        rpcURL: "https://transaction.safe.telos.net",
-        class: TelosMainnet,
     },
     56: {
         name: "Binance Mainnet",
@@ -120,18 +111,6 @@ const SupportedSafesInfo: {[chainId: number]: {name: string, chainId: number, rp
         chainId: 900002,
         rpcURL: "https://mango.devnet.rpcpool.com",
         class: SolanaDevnet,
-    },
-    4689: {
-        name: 'IoTex Mainnet',
-        chainId: 4689,
-        rpcURL: 'https://transaction.safe.iotex.io',
-        class: IoTexMainnet,
-    },
-    4690: {
-        name: 'IoTex Testnet',
-        chainId: 4690,
-        rpcURL: 'https://transaction-testnet.safe.iotex.io',
-        class: IoTexTestnet,
     },
     512341:{
         name:'TON Mainnet',
