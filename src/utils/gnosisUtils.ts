@@ -1,6 +1,19 @@
-import { ethers, logger } from "ethers"
-import { erc20ABI } from "wagmi"
+import { ethers } from "ethers"
 import { getCeloTokenUSDRate } from "./tokenConversionUtils"
+
+// ERC20 ABI for transfer function
+const erc20ABI = [
+	{
+		"constant": false,
+		"inputs": [
+			{ "name": "_to", "type": "address" },
+			{ "name": "_value", "type": "uint256" }
+		],
+		"name": "transfer",
+		"outputs": [{ "name": "", "type": "bool" }],
+		"type": "function"
+	}
+] as const
 
 
 export const encodeTransactionData = (recipientAddress: string, fundAmount: string, rewardAssetDecimals: number, workspaceId: number, grantAddress: string, applicationId: number) =>  {
